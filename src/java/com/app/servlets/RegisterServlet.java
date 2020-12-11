@@ -5,6 +5,7 @@
  */
 package com.app.servlets;
 
+import com.app.beans.UserRegisterValidationBean;
 import com.app.daos.RoleDAO;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
@@ -14,6 +15,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +32,9 @@ public class RegisterServlet extends HttpServlet {
     private final String REGISTER_PAGE = "register.jsp";
     private final String REGISTER_SUCCESS_PAGE = "register_success.html";
     private final String REGISTER_FAILED_PAGE = "register_failed.html";
-    
+
+    private final String INSERT_ERROR = "Failed to register account!";
+    private final String DUPLICATE_ERROR = "This user is already taken!";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -82,29 +86,57 @@ public class RegisterServlet extends HttpServlet {
         String address = request.getParameter("txtAddress");
         String phoneNumber = request.getParameter("txtPhoneNumber");
         Date createdDate = new Date(new java.util.Date().getTime());
-        
-        String url = REGISTER_FAILED_PAGE;
+
+        String url = REGISTER_PAGE;
 
         // get role id from db
         RoleDAO roleDAO = new RoleDAO();
 
         try {
             String roleID = roleDAO.getRoleIdByRoleName("User");
-            if(roleID != null){
+            if (roleID != null) {
                 UserDTO newUser = new UserDTO(userID, password, fullName, address, email, phoneNumber, createdDate, roleID);
-                UserDAO userDAO = new UserDAO();
-                boolean isUserAdded = userDAO.insertUser(newUser);
-                if(isUserAdded){
-                    url = REGISTER_SUCCESS_PAGE;
+                // validate user info
+                UserRegisterValidationBean validationBean = new UserRegisterValidationBean();
+                boolean isValidUser = validationBean.validateUser(newUser);
+                if (isValidUser) {
+                    UserDAO userDAO = new UserDAO();
+                    // check duplicate user
+                    boolean isExistedUser = userDAO.isExistedUser(newUser.getUserID());
+                    if (isExistedUser) {
+                        request.setAttribute("duplicateError", DUPLICATE_ERROR);
+                    } else {
+                        boolean isUserAdded = userDAO.insertUser(newUser);
+                        if (isUserAdded) {
+                            url = REGISTER_SUCCESS_PAGE;
+                        } else {
+                            request.setAttribute("insertError", INSERT_ERROR);
+                        }
+                    }
+
+                } else {
+                    // set validation error
+                    request.setAttribute("userIdError", validationBean.getUserIdError());
+                    request.setAttribute("passwordError", validationBean.getPasswordError());
+                    request.setAttribute("fullNameError", validationBean.getFullNameError());
+                    request.setAttribute("emailError", validationBean.getEmailError());
+                    request.setAttribute("phoneError", validationBean.getPhoneError());
+                    request.setAttribute("addressError", validationBean.getAddressError());
                 }
+                // store input data to request scope
+                request.setAttribute("userID", newUser.getUserID());
+                request.setAttribute("fullName", newUser.getFullName());
+                request.setAttribute("address", newUser.getAddress());
+                request.setAttribute("email", newUser.getEmail());
+                request.setAttribute("phone", newUser.getPhoneNumber());
             }
         } catch (SQLException ex) {
             LOGGER.error("error when inserting user!", ex);
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
-        finally{
-            response.sendRedirect(url);
-        }
-        
+
     }
 
     /**

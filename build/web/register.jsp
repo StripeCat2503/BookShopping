@@ -1,32 +1,60 @@
-<%-- 
-    Document   : register
-    Created on : Dec 8, 2020, 11:36:48 AM
-    Author     : DuyNK
---%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>User Registration</title>
+        <title>Sign Up</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css"/>
+        <link rel="stylesheet" href="css/register.css"/>
     </head>
     <body>
-        <h2>Register new account</h2>
+
         <form action="RegisterServlet" method="POST">
-            <label>User ID</label><br>
-            <input type="text" placeholder="User ID" name="txtUserID"/><br>
-            <label>Password</label><br>
-            <input type="password" placeholder="Password" name="txtPassword"/><br>
-            <label>Full Name</label><br>
-            <input type="text" placeholder="Full name" name="txtFullName"/><br>
-            <label>Address</label><br>
-            <input type="text" placeholder="Address" name="txtAddress"/><br>
-            <label>Email</label><br>
-            <input type="text" placeholder="Email" name="txtEmail"/><br>
-            <label>Phone Number</label><br>
-            <input type="text" placeholder="Phone Number" name="txtPhoneNumber"/><br>
-            <input type="submit" value="Register" />
+
+            <div class="inner-form">
+                <h2><a href="/BookShopping">BookWorld</a></h2>
+                <p class="text-muted mt-3">Sign Up</p>
+                <label for="">User ID</label>
+                <input type="text" name="txtUserID" value="${requestScope.userID}">
+                <c:if test="${not empty requestScope.userIdError}">
+                    <small class="text-danger my-1">${requestScope.userIdError}</small>
+                </c:if>
+                <c:if test="${not empty requestScope.duplicateError}">
+                    <small class="text-danger my-1">${requestScope.duplicateError}</small>
+                </c:if>
+                <label for="">Password</label>
+                <input type="password" name="txtPassword">
+                <c:if test="${not empty requestScope.passwordError}">
+                    <small class="text-danger my-1">${requestScope.passwordError}</small>
+                </c:if>
+                <label for="">Full Name</label>
+                <input type="text" name="txtFullName" value="${requestScope.fullName}">
+                <c:if test="${not empty requestScope.fullNameError}">
+                    <small class="text-danger my-1">${requestScope.fullNameError}</small>
+                </c:if>
+                <label for="">Email</label>
+                <input type="text" name="txtEmail" value="${requestScope.email}">
+                <c:if test="${not empty requestScope.emailError}">
+                    <small class="text-danger my-1">${requestScope.emailError}</small>
+                </c:if>
+                <label for="">Phone Number</label>
+                <input type="text" name="txtPhoneNumber" value="${requestScope.phone}">
+                <c:if test="${not empty requestScope.phoneError}">
+                    <small class="text-danger my-1">${requestScope.phoneError}</small>
+                </c:if>
+                <label for="">Address</label>
+                <input type="text" name="txtAddress" value="${requestScope.address}">
+                <c:if test="${not empty requestScope.addressError}">
+                    <small class="text-danger my-1">${requestScope.addressError}</small>
+                </c:if>
+                <input type="submit" value="SIGN UP" class="btn primary-bg-color text-light not-rounded">
+            </div>
         </form>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://code.jquery.com/jquery-2.2.4.js"></script>     
     </body>
 </html>

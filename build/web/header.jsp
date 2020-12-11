@@ -7,9 +7,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg shadow-sm bg-white">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">BookWorld</a>
+        <a class="navbar-brand text-dark fw-bold" href="/BookShopping">BookWorld</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -34,12 +34,13 @@
                 </li>       
             </ul>
             <c:if test="${empty sessionScope.user}">
-                <a href="LoginServlet" class="btn btn-danger mx-3">Login</a>
-                <a href="RegisterServlet" class="btn btn-outline-light">Register account</a><br>
+                <a href="LoginServlet" class="btn primary-bg-color text-light not-rounded mx-2">Sign In</a>
+                <a href="RegisterServlet" class="btn primary-border-color primary-text-color not-rounded mx-2">Sign Up</a>
+                            
             </c:if>
             <c:if test="${not empty sessionScope.user}">
-                <a href="UserProfileServlet" class="mx-3 text-light text-decoration-none">Welcome, ${sessionScope.user.fullName}!</a>
-                <a href="LogoutServlet" class="btn btn-primary">Logout</a>
+                <a href="UserProfileServlet" class="mx-3 primary-text-color text-decoration-none">Welcome, ${sessionScope.user.fullName}!</a>
+                <a href="LogoutServlet" class="btn primary-bg-color text-light not-rounded">Logout</a>
             </c:if>
 
         </div>

@@ -27,8 +27,13 @@ public class UserDAO {
             + "address, email, phoneNumber, roleID, createdDate) "
             + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     
-    private final String SQL_GET_USER = "SELECT userID, fullName, email, address, phoneNumber "
+    private final String SQL_GET_USER = "SELECT userID, fullName, email, address, phoneNumber, roleID "
             + "FROM tblUsers WHERE userID = ? AND password = ?";
+    
+    private final String SQL_GET_ROLE_NAME = "SELECT roleName FROM tblUsers AS u, tblRoles AS r WHERE "
+            + "u.roleID = r.roleID AND u.roleID = ?";
+    
+    private final String SQL_CHECK_USER = "SELECT userID FROM tblUsers WHERE userID = ?";
 
     public boolean insertUser(UserDTO user) throws SQLException {
         Connection con = null;
@@ -92,6 +97,7 @@ public class UserDAO {
                     user.setAddress(rs.getString("address"));
                     user.setEmail(rs.getString("email"));
                     user.setPhoneNumber(rs.getString("phoneNumber"));
+                    user.setRoleID(rs.getString("roleID"));
                 }
             }
 
@@ -107,5 +113,71 @@ public class UserDAO {
         }
 
         return user;
+    }
+    
+    public String getUserRoleName(String roleID) throws SQLException{
+        Connection con = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        String roleName = null;
+        
+        try {
+            con = DBUtil.getConnection();
+            if (con != null) {
+                stm = con.prepareStatement(SQL_GET_ROLE_NAME);
+                stm.setString(1, roleID);
+               
+                rs = stm.executeQuery();
+                
+                if(rs.next()){
+                    roleName = rs.getString("roleName");
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error while get role name of user!", e);
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        
+        return roleName;
+    }
+    
+    public boolean isExistedUser(String userID) throws SQLException{
+        Connection con = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        boolean isExisted = false;
+        
+        try {
+            con = DBUtil.getConnection();
+            if (con != null) {
+                stm = con.prepareStatement(SQL_CHECK_USER);
+                stm.setString(1, userID);
+               
+                rs = stm.executeQuery();
+                
+                if(rs.next()){
+                    isExisted = true;
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error while check duplicate user!", e);
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+        
+        return isExisted;
     }
 }

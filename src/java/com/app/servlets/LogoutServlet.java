@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
  * @author DuyNK
  */
 public class LogoutServlet extends HttpServlet {
-    private final String LOGIN_PAGE = "login.jsp";
+    private final String HOME_PAGE = "/BookShopping";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,7 +36,7 @@ public class LogoutServlet extends HttpServlet {
             session.invalidate();
         }
         
-        response.sendRedirect(LOGIN_PAGE);
+        response.sendRedirect(HOME_PAGE);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

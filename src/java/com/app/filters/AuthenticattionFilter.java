@@ -5,90 +5,62 @@
  */
 package com.app.filters;
 
+import com.app.daos.UserDAO;
+import com.app.dtos.UserDTO;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class AuthenticattionFilter implements Filter {
-    
+
     private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
+
+    private static final Logger LOGGER = Logger.getLogger(AuthenticattionFilter.class);
+
     private final String LOGIN_PAGE = "login.jsp";
     private final String WELCOME_PAGE = "index.jsp";
-    
+    private final String ADMIN_PAGE = "admin.jsp";
+    private final String NOT_FOUND = "not_found.html";
+
     public AuthenticattionFilter() {
-    }    
-    
+    }
+
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
             log("AuthenticattionFilter:DoBeforeProcessing");
         }
 
-        // Write code here to process the request and/or response before
-        // the rest of the filter chain is invoked.
-        // For example, a logging filter might log items on the request object,
-        // such as the parameters.
-        /*
-	for (Enumeration en = request.getParameterNames(); en.hasMoreElements(); ) {
-	    String name = (String)en.nextElement();
-	    String values[] = request.getParameterValues(name);
-	    int n = values.length;
-	    StringBuffer buf = new StringBuffer();
-	    buf.append(name);
-	    buf.append("=");
-	    for(int i=0; i < n; i++) {
-	        buf.append(values[i]);
-	        if (i < n-1)
-	            buf.append(",");
-	    }
-	    log(buf.toString());
-	}
-         */
-    }    
-    
+    }
+
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
             log("AuthenticattionFilter:DoAfterProcessing");
         }
 
-        // Write code here to process the request and/or response after
-        // the rest of the filter chain is invoked.
-        // For example, a logging filter might log the attributes on the
-        // request object after the request has been processed. 
-        /*
-	for (Enumeration en = request.getAttributeNames(); en.hasMoreElements(); ) {
-	    String name = (String)en.nextElement();
-	    Object value = request.getAttribute(name);
-	    log("attribute: " + name + "=" + value.toString());
-
-	}
-         */
-        // For example, a filter might append something to the response.
-        /*
-	PrintWriter respOut = new PrintWriter(response.getWriter());
-	respOut.println("<P><B>This has been appended by an intrusive filter.</B>");
-         */
     }
 
     /**
@@ -103,24 +75,55 @@ public class AuthenticattionFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-        
+
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        System.out.println("URI: " + req.getRequestURI());
-        
+
         String uri = req.getRequestURI();
         HttpSession session = req.getSession(false);
-        if(uri.endsWith("LoginServlet")){
-            if(session != null && session.getAttribute("user") != null){
-                res.sendRedirect(WELCOME_PAGE);
-            }
-            else{
-                chain.doFilter(request, response);
-            }
-        }     
-        else{
-            chain.doFilter(request, response);
+        System.out.println("uri:" + uri);
+
+        // check user is authenticated or not
+        boolean isAuthenticated = session != null && session.getAttribute("user") != null;
+        boolean isLoginRequest = uri.endsWith("LoginServlet");
+        boolean isLoginPage = uri.endsWith("login.jsp");
+        boolean isHomePage = uri.endsWith("/");
+        boolean isRegisterPage = uri.endsWith("register.jsp");
+        boolean isRegisterRequest = uri.endsWith("RegisterServlet");
+
+        if (isAuthenticated) {
+            String url = NOT_FOUND;
+            try {
+                // check role of user
+                UserDTO loggedInUser = (UserDTO) session.getAttribute("user");
+                UserDAO dao = new UserDAO();
+                String roleID = loggedInUser.getRoleID();
+                String roleName = dao.getUserRoleName(roleID);
+
+                if (isLoginRequest || isLoginPage || isHomePage
+                        || isRegisterPage || isRegisterRequest) {
+                    if (roleName.equals("Admin")) {
+                        url = ADMIN_PAGE;
+                    } else if (roleName.equals("User")) {
+                        url = WELCOME_PAGE;
+                    }
+
+                    RequestDispatcher rd = req.getRequestDispatcher(url);
+                    rd.forward(request, response);
+                }
+
+            } catch (Exception ex) {
+                LOGGER.error("Error at when get usser role name", ex);
+            } 
         }
+
+        if (!isAuthenticated && isLoginPage) {
+            RequestDispatcher rd = req.getRequestDispatcher(LOGIN_PAGE);
+            rd.forward(request, response);
+        }
+
+        chain.doFilter(request, response);
+
     }
 
     /**
@@ -142,16 +145,16 @@ public class AuthenticattionFilter implements Filter {
     /**
      * Destroy method for this filter
      */
-    public void destroy() {        
+    public void destroy() {
     }
 
     /**
      * Init method for this filter
      */
-    public void init(FilterConfig filterConfig) {        
+    public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
-            if (debug) {                
+            if (debug) {
                 log("AuthenticattionFilter:Initializing filter");
             }
         }
@@ -170,20 +173,20 @@ public class AuthenticattionFilter implements Filter {
         sb.append(")");
         return (sb.toString());
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response) {
-        String stackTrace = getStackTrace(t);        
-        
+        String stackTrace = getStackTrace(t);
+
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
+                PrintWriter pw = new PrintWriter(ps);
                 pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
                 // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
                 pw.print("</pre></body>\n</html>"); //NOI18N
                 pw.close();
                 ps.close();
@@ -200,7 +203,7 @@ public class AuthenticattionFilter implements Filter {
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t) {
         String stackTrace = null;
         try {
@@ -214,9 +217,9 @@ public class AuthenticattionFilter implements Filter {
         }
         return stackTrace;
     }
-    
+
     public void log(String msg) {
-        filterConfig.getServletContext().log(msg);        
+        filterConfig.getServletContext().log(msg);
     }
-    
+
 }

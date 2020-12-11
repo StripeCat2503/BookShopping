@@ -9,9 +9,47 @@ and open the template in the editor.
         <title>Register success</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css"/>
+
+        <style>
+            .wrapper{
+                width: 400px;
+
+                box-shadow: 1px 1px 2px 2px rgba(0, 0, 0, 0.1);
+                margin: 50px auto;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .wrapper *{
+                box-sizing: border-box;
+            }
+
+            .wrapper img{
+                width: 50%;
+
+            }
+
+            .wrapper a{
+                text-transform: uppercase;
+                text-decoration: none;   
+                display: block;
+                color: white;     
+                padding: 15px 0;
+                margin: 10px 0;
+            }
+        </style>
     </head>
     <body>
-        <div>Register account successfully!</div>
-        <a href="LoginServlet">Go to login page</a>
+        <div class="wrapper">
+            <div class="mb-5">
+                <img src="images/success.png" alt="">
+                <h3 class="fw-bold">Congratulation!</h3>
+                <p class="text-muted">Now you have an account of BookWorld</p>
+            </div>
+            <a href="LoginServlet" class="not-rounded btn primary-bg-color">Sign In Now</a>
+            <a href="/BookShopping" class="not-rounded btn bg-danger">Shopping without signing in</a>
+        </div>
     </body>
 </html>

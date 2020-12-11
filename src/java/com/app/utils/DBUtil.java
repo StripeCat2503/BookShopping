@@ -25,6 +25,7 @@ public class DBUtil {
         Class.forName(JDBC_DRIVER);
         Connection con = null;
         String url = "jdbc:sqlserver://" + IP + ":" + PORT + ";databaseName=" + DB_NAME;
+                
         con = DriverManager.getConnection(url, USER, PASSWORD);
         
         return con;
