@@ -80,7 +80,7 @@
                 <h4 class="text-uppercase text-center">Cart Total</h4>
                 <div class="text-center fw-bold fs-1">$<%= cartTotal%></div>
                 <div class="text-center">
-                    <a href="#" class="d-block btn-checkout">CHECKOUT</a>
+                    <a href="CheckoutServlet" class="d-block btn-checkout">CHECKOUT</a>
                 </div>
 
             </section>

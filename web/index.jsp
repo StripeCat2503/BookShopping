@@ -30,9 +30,8 @@
             <c:forEach items="${requestScope.PRODUCT_LIST}" var="product">
                 <div class="product-card">
                     <form action="AddToCartServlet" method="POST">
-                        <div class="mt-4">
-                            <div class="mx-auto" style="background-image: url('${product.image}'); width: 200px; height: 200px; background-position: center; 
-                                 background-size: cover;">
+                        <div>
+                            <div class="mx-auto product-image" style="background-image: url('${product.image}');">
 
                             </div>
 

@@ -2,11 +2,7 @@
     display: flex;
     flex-wrap: wrap;
     padding: 20px;
-    width: 80%;
-}
-
-.clear-float {
-    clear: both;
+    width: 90%;
 }
 
 .product-card .info {
@@ -26,9 +22,9 @@
     height: 200px;
 }
 
-#product-image{
-    width: 200px;
-    height: 200px;
+.product-image{
+    width: 100%;
+    height: 400px;
     background-position: center;
     background-size: cover;
 }
