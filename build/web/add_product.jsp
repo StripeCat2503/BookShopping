@@ -9,7 +9,7 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>       
-        <form action="AddProductServlet" class="w-50 mx-auto" method="POST">
+        <form action="AddProductServlet" class="w-50 mx-auto" method="POST" enctype="multipart/form-data">
             <h3 class="my-3">Add new product</h3>
             <div class="form-group my-2">
                 <label for="">Product's name</label>

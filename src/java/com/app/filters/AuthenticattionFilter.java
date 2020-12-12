@@ -40,7 +40,7 @@ public class AuthenticattionFilter implements Filter {
     private static final Logger LOGGER = Logger.getLogger(AuthenticattionFilter.class);
 
     private final String LOGIN_PAGE = "login.jsp";
-    private final String WELCOME_PAGE = "index.jsp";
+    private final String USER_PAGE_CONTROLLER = "UserPageServlet";
     private final String ADMIN_PAGE = "admin.jsp";
     private final String NOT_FOUND = "not_found.html";
 
@@ -105,7 +105,7 @@ public class AuthenticattionFilter implements Filter {
                     if (roleName.equals("Admin")) {
                         url = ADMIN_PAGE;
                     } else if (roleName.equals("User")) {
-                        url = WELCOME_PAGE;
+                        url = USER_PAGE_CONTROLLER;
                     }
 
                     RequestDispatcher rd = req.getRequestDispatcher(url);

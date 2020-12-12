@@ -48,6 +48,18 @@
         <servlet-name>UpdateProductServlet</servlet-name>
         <servlet-class>com.app.servlets.UpdateProductServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <servlet-class>com.app.servlets.AddToCartServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteCartItemServlet</servlet-name>
+        <servlet-class>com.app.servlets.DeleteCartItemServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateCartServlet</servlet-name>
+        <servlet-class>com.app.servlets.UpdateCartServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -79,6 +91,18 @@
     <servlet-mapping>
         <servlet-name>UpdateProductServlet</servlet-name>
         <url-pattern>/UpdateProductServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddToCartServlet</servlet-name>
+        <url-pattern>/AddToCartServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteCartItemServlet</servlet-name>
+        <url-pattern>/DeleteCartItemServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateCartServlet</servlet-name>
+        <url-pattern>/UpdateCartServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

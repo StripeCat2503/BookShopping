@@ -7,9 +7,15 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Update product</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            img{
+                max-width: 200px;
+                max-height: 200px;
+            }
+        </style>
     </head>
     <body>       
-        <form action="UpdateProductServlet" class="w-50 mx-auto" method="POST">
+        <form action="UpdateProductServlet" class="w-50 mx-auto" method="POST" enctype="multipart/form-data">
             <h3 class="my-3">Update product</h3>
             <input type="hidden" name="txtProductID" value="${requestScope.PRODUCT.productID}"/>
             <div class="form-group my-2">
@@ -39,7 +45,11 @@
                     </select>
                 </div>
                 <div class="form-group my-2">
-                    <label for="">Image</label>
+                    <label for="" class="d-block">Image</label>
+                    <div class="my-3">
+                        <img src="${requestScope.PRODUCT.image}" />
+                    </div>
+                    <input type="hidden" name="oldImgProduct" value="${requestScope.PRODUCT.image}"/>
                     <input type="file" class="form-control" name="imgProduct">
                 </div>
                 <div class="form-group my-2">

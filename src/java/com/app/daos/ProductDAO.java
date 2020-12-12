@@ -5,6 +5,7 @@
  */
 package com.app.daos;
 
+import com.app.constants.MyConstants;
 import com.app.dtos.ProductCategoryDTO;
 import com.app.dtos.ProductDTO;
 import com.app.utils.DBUtil;
@@ -177,6 +178,7 @@ public class ProductDAO {
                     int quantity = rs.getInt("quantity");
                     boolean isActive = rs.getBoolean("status");
                     String image = rs.getString("image");
+                    image = image.isEmpty() ? MyConstants.DEFAULT_PRODUCT_IMAGE_URL : image.replace("\\", "/");
                     String des = rs.getString("description");
                     int categoryID = rs.getInt("categoryID");
                     String categoryName = rs.getString("categoryName");
@@ -224,6 +226,7 @@ public class ProductDAO {
                     int quantity = rs.getInt("quantity");
                     boolean isActive = rs.getBoolean("status");
                     String image = rs.getString("image");
+                    image = image.isEmpty() ? MyConstants.DEFAULT_PRODUCT_IMAGE_URL : image.replace("\\", "/");
                     String des = rs.getString("description");
                     int categoryID = rs.getInt("categoryID");
 

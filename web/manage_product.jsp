@@ -11,7 +11,7 @@
     </head>
     <body>
         <h1>Product management</h1>
-
+        <a href="admin.jsp">Agmin page</a>
         <table class="table table-light table-hover">
             <thead>
                 <tr>

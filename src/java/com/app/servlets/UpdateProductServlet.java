@@ -6,14 +6,17 @@
 package com.app.servlets;
 
 import com.app.beans.ProductValidationBean;
+import com.app.constants.MyConstants;
 import com.app.daos.ProductCategoryDAO;
 import com.app.daos.ProductDAO;
 import com.app.dtos.ProductCategoryDTO;
 import com.app.dtos.ProductDTO;
+import com.app.utils.MyUtils;
 import com.app.utils.ValidationUtils;
 import java.io.IOException;
 import java.util.List;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,6 +25,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DuyNK
  */
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024 * 10,
+        maxFileSize = 1024 * 1024 * 50,
+        maxRequestSize = 1024 * 1024 * 100
+)
 public class UpdateProductServlet extends HttpServlet {
     private final String UPDATE_PRODUCT_PAGE = "edit_product.jsp";
     private final String MANAGE_PRODUCT = "ManageProductServlet";
@@ -101,6 +109,8 @@ public class UpdateProductServlet extends HttpServlet {
         boolean status = request.getParameter("slStatus").equals("1") ? true : false;
         String des = request.getParameter("txtDescription");
         int categoryID = Integer.parseInt(request.getParameter("slCategory"));
+        String oldImageUrl = request.getParameter("oldImgProduct");
+        oldImageUrl = oldImageUrl.trim().equals(MyConstants.DEFAULT_PRODUCT_IMAGE_URL) ? "" : oldImageUrl;
         
         String url = UPDATE_PRODUCT_PAGE;
         ProductValidationBean productValidationBean = new ProductValidationBean();
@@ -125,7 +135,13 @@ public class UpdateProductServlet extends HttpServlet {
                 int quantity = Integer.parseInt(quantityStr);
                 tmpPrice = price;
                 tmpQuantity = quantity;
-                ProductDTO product = new ProductDTO(productID, productName, price, quantity, status, "", des, new ProductCategoryDTO(categoryID));
+                // update product image
+                String uploadDir = MyConstants.PRODUCT_IMAGE_DIR;
+                String imgParam = "imgProduct";
+                String imageUrl = MyUtils.uploadFile(request, imgParam, uploadDir);
+                imageUrl = imageUrl.isEmpty() ? oldImageUrl : imageUrl;
+                
+                ProductDTO product = new ProductDTO(productID, productName, price, quantity, status, imageUrl, des, new ProductCategoryDTO(categoryID));
 
                 boolean isValidProduct = productValidationBean.isValidProduct(product);
                 if (isValidProduct) {

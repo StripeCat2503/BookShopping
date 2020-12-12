@@ -79,12 +79,12 @@ public class RegisterServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
 
-        String userID = request.getParameter("txtUserID");
+        String userID = request.getParameter("txtUserID").trim();
         String password = request.getParameter("txtPassword");
-        String fullName = request.getParameter("txtFullName");
-        String email = request.getParameter("txtEmail");
+        String fullName = request.getParameter("txtFullName").trim();
+        String email = request.getParameter("txtEmail").trim();
         String address = request.getParameter("txtAddress");
-        String phoneNumber = request.getParameter("txtPhoneNumber");
+        String phoneNumber = request.getParameter("txtPhoneNumber").trim();
         Date createdDate = new Date(new java.util.Date().getTime());
 
         String url = REGISTER_PAGE;

@@ -1,2 +1,3 @@
 Primary color = #6ab04c
+Purple = #e056fd
 Dark Color = #535c68

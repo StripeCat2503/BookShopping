@@ -5,11 +5,9 @@
  */
 package com.app.servlets;
 
-import com.app.daos.RoleDAO;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import javax.servlet.RequestDispatcher;
 
@@ -29,7 +27,7 @@ public class LoginServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(LoginServlet.class);
 
     private final String LOGIN_PAGE = "login.jsp";
-    private final String WELCOME_PAGE = "index.jsp";
+    private final String USER_PAGE = "index.jsp";
     private final String ADMIN_PAGE = "admin.jsp";
     private final String NOT_FOUND = "not_found.html";
 
@@ -95,7 +93,7 @@ public class LoginServlet extends HttpServlet {
                     if (roleName.equals("Admin")) {
                         url = ADMIN_PAGE;
                     } else if (roleName.equals("User")) {
-                        url = WELCOME_PAGE;
+                        url = USER_PAGE;
                     } else {
                         url = NOT_FOUND;
                     }
