@@ -12,46 +12,59 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="css/style.css"/>
         <link rel="stylesheet" href="css/manage_order.css"/>
+        <link rel="stylesheet" href="css/admin.css"/>
     </head>
-    
+
     <body>
-        <h2>Order Management</h2>
-        <%
-            SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yyyy");
-            OrderDAO orderDAO = new OrderDAO();
-            List<OrderDTO> orders = orderDAO.getAllOrders();
-            if (orders != null && !orders.isEmpty()) {
-        %>
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Total</th>
-                    <th>Order Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <%
-                    for (OrderDTO order : orders) {
+        <jsp:include page="admin_header.jsp" /> 
+        <div class="side-nav">
+            <div class="text-center side-nav-item">
+                <a href="manageProduct">Manage Product</a>
+            </div>
+            <div class="text-center side-nav-item">
+                <a href="order">Manage Order</a>
+            </div>
+        </div>
 
-                %>
+        <div class="content">
+            <h3 class="text-uppercase">Order Management</h3>
+            <%
+                SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yyyy");
+                OrderDAO orderDAO = new OrderDAO();
+                List<OrderDTO> orders = orderDAO.getAllOrders();
+                if (orders != null && !orders.isEmpty()) {
+            %>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Total</th>
+                        <th>Order Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                        for (OrderDTO order : orders) {
 
-                <tr>
-                    <td>
-                        <a href="OrderDetailsServlet?id=<%= order.getOrderID()%>">#<%= order.getOrderID()%></a>
-                    </td>
-                    <td class="fw-bold">$<%= order.getTotalPrice()%></td>
-                    <td><%= fm.format(order.getOrderDate())%></td>
-                </tr>
+                    %>
 
-                <%
-                    }
-                %>
-            </tbody>
-        </table>
-        <%
-            }
-        %>
+                    <tr>
+                        <td>
+                            <a href="OrderDetailsServlet?id=<%= order.getOrderID()%>">#<%= order.getOrderID()%></a>
+                        </td>
+                        <td class="fw-bold">$<%= order.getTotalPrice()%></td>
+                        <td><%= fm.format(order.getOrderDate())%></td>
+                    </tr>
+
+                    <%
+                        }
+                    %>
+                </tbody>
+            </table>
+            <%
+                }
+            %>
+        </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-2.2.4.js"></script>     
