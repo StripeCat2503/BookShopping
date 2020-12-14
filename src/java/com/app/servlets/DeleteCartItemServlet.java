@@ -46,7 +46,7 @@ public class DeleteCartItemServlet extends HttpServlet {
         } catch (Exception e) {
         }
         finally{
-            response.sendRedirect(url);
+            request.getRequestDispatcher(url).forward(request, response);
         }
     }
 

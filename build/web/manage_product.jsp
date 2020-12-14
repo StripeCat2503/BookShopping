@@ -1,8 +1,16 @@
 
+<%@page import="java.util.List"%>
+<%@page import="com.app.dtos.ProductDTO"%>
+<%@page import="com.app.daos.ProductDAO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
+    <%
+        ProductDAO dao = new ProductDAO();
+        List<ProductDTO> products = dao.getAllProducts();
+        request.setAttribute("PRODUCT_LIST", products);
+    %>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Manage Product</title>
@@ -11,7 +19,7 @@
     </head>
     <body>
         <h1>Product management</h1>
-        <a href="admin.jsp">Agmin page</a>
+        <a href="admin">Agmin page</a>
         <table class="table table-light table-hover">
             <thead>
                 <tr>
@@ -41,7 +49,7 @@
                             </c:if>
                         </td>
                         <td>
-                            <a href="UpdateProductServlet?productID=${product.productID}">Edit</a>
+                            <a href="editProduct?productID=${product.productID}">Edit</a>
                         </td>
                         <td>
                             <a href="DeleteProductServlet?productID=${product.productID}">Delete</a>

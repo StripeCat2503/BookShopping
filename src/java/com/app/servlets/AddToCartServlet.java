@@ -8,7 +8,6 @@ package com.app.servlets;
 import com.app.dtos.CartDTO;
 import com.app.dtos.ProductDTO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -46,14 +45,20 @@ public class AddToCartServlet extends HttpServlet {
             product.setProductID(productID);
             product.setProductName(productName);
             product.setPrice(price);
-            product.setImage(imageUrl);
-            product.setQuantity(1);
+            product.setImage(imageUrl);          
             
             HttpSession session = request.getSession();
             CartDTO cart = (CartDTO) session.getAttribute("CART");
             if(cart == null){
                 cart = new CartDTO();
             }
+            
+            int currentQuantity = 1;
+            if(cart.getItems() != null && !cart.getItems().isEmpty() && cart.getItems().get(productID) != null){
+                currentQuantity = cart.getItems().get(productID).getQuantity();
+            }
+            
+            product.setQuantity(currentQuantity);
             
             cart.addItemToCart(product);
             

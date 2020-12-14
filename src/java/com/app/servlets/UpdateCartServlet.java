@@ -50,7 +50,7 @@ public class UpdateCartServlet extends HttpServlet {
             url = SUCCESS;
         }
         
-        response.sendRedirect(url);
+        request.getRequestDispatcher(url).forward(request, response);
         
     }
 

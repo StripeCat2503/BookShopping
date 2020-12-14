@@ -5,9 +5,16 @@
  */
 package com.app.servlets;
 
-import com.app.daos.ProductDAO;
-import com.app.dtos.ProductDTO;
+import com.app.daos.OrderDAO;
+import com.app.daos.OrderDetailsDAO;
+import com.app.daos.PaymentMethodDAO;
+import com.app.daos.UserDAO;
+import com.app.dtos.OrderDTO;
+import com.app.dtos.OrderDetailsDTO;
+import com.app.dtos.PaymentMethodDTO;
+import com.app.dtos.UserDTO;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -18,8 +25,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DuyNK
  */
-public class ManageProductServlet extends HttpServlet {
-    private final String MANAGE_PAGE = "manage_product.jsp";
+public class OrderDetailsServlet extends HttpServlet {
+    private final String SUCCESS = "order_details.jsp";
+    private final String FAIL = "error.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,8 +40,40 @@ public class ManageProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+        String url = FAIL;
         
+        try {
+            int orderID = Integer.parseInt(request.getParameter("id"));
+            
+            OrderDAO orderDAO = new OrderDAO();
+            OrderDTO order = orderDAO.getOrderByID(orderID);
+            if(order != null){
+                String userID = order.getUserID();
+                String paymentMethodID = order.getPaymentMethodID();
+                // get customer info
+                UserDAO userDAO = new UserDAO();
+                UserDTO customer = userDAO.getUserByID(userID);
+                // get payment method info
+                PaymentMethodDAO paymentMethodDAO = new PaymentMethodDAO();
+                PaymentMethodDTO paymentMethod = paymentMethodDAO.getPaymentMethodByID(paymentMethodID);
+                
+                // get all order details of the order
+                OrderDetailsDAO detailDAO = new OrderDetailsDAO();
+                List<OrderDetailsDTO> details = detailDAO.getAllOrderDetailsByOrderID(orderID);
+                
+                url = SUCCESS;
+                
+                request.setAttribute("ORDER", order);
+                request.setAttribute("CUSTOMER", customer);
+                request.setAttribute("METHOD", paymentMethod);
+                request.setAttribute("ORDER_DETAILS", details);
+                
+            }
+        } catch (Exception e) {
+        }
+        finally{
+            request.getRequestDispatcher(url).forward(request, response);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -49,17 +89,6 @@ public class ManageProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        String url = MANAGE_PAGE;
-        
-        try {
-            ProductDAO dao = new ProductDAO();
-            List<ProductDTO> products = dao.getAllProducts();
-            request.setAttribute("PRODUCT_LIST", products);
-        } catch (Exception e) {
-        }
-        finally{
-            request.getRequestDispatcher(url).forward(request, response);
-        }
     }
 
     /**

@@ -16,15 +16,27 @@ public class OrderDTO {
     private String userID;
     private double totalPrice;
     private Date orderDate;
+    private String paymentMethodID;
 
     public OrderDTO() {
     }
 
-    public OrderDTO(String userID, double totalPrice, Date orderDate) {
+    public OrderDTO(int orderID, String userID, double totalPrice, Date orderDate, String paymentMethodID) {
+        this.orderID = orderID;
         this.userID = userID;
         this.totalPrice = totalPrice;
         this.orderDate = orderDate;
+        this.paymentMethodID = paymentMethodID;
     }
+
+    public OrderDTO(String userID, double totalPrice, Date orderDate, String paymentMethodID) {
+        this.userID = userID;
+        this.totalPrice = totalPrice;
+        this.orderDate = orderDate;
+        this.paymentMethodID = paymentMethodID;
+    }
+
+    
 
     public int getOrderID() {
         return orderID;
@@ -56,6 +68,14 @@ public class OrderDTO {
 
     public void setOrderDate(Date orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getPaymentMethodID() {
+        return paymentMethodID;
+    }
+
+    public void setPaymentMethodID(String paymentMethodID) {
+        this.paymentMethodID = paymentMethodID;
     }
     
     

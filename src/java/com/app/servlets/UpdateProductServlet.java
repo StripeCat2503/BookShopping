@@ -11,10 +11,12 @@ import com.app.daos.ProductCategoryDAO;
 import com.app.daos.ProductDAO;
 import com.app.dtos.ProductCategoryDTO;
 import com.app.dtos.ProductDTO;
+import com.app.routes.AppRouting;
 import com.app.utils.MyUtils;
 import com.app.utils.ValidationUtils;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -45,74 +47,21 @@ public class UpdateProductServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {        
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-        String url = UPDATE_PRODUCT_PAGE;
-        String productIDStr = request.getParameter("productID");
-
-        try {
-            ProductCategoryDAO dao = new ProductCategoryDAO();
-            List<ProductCategoryDTO> categoryList = dao.getAllCategories();
-            request.setAttribute("CATEGORY_LIST", categoryList);
-            
-            if(productIDStr != null){
-                ProductDAO productDAO = new ProductDAO();
-                int productID = Integer.parseInt(productIDStr);
-                ProductDTO product = productDAO.getProductByID(productID);
-                if(product != null){
-                    request.setAttribute("PRODUCT", product);
-                }
-                else{
-                    url = ERROR_PAGE;
-                }
-            }
-            else{
-                url = ERROR_PAGE;
-            }
-
-        } catch (Exception e) {
-        } finally {
-            request.getRequestDispatcher(url).forward(request, response);
-        }
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-        String productIDStr = request.getParameter("txtProductID");
-        String productName = request.getParameter("txtProductName");
-        String priceStr = request.getParameter("txtPrice");
-        String quantityStr = request.getParameter("txtQuantity");
-        boolean status = request.getParameter("slStatus").equals("1") ? true : false;
-        String des = request.getParameter("txtDescription");
-        int categoryID = Integer.parseInt(request.getParameter("slCategory"));
-        String oldImageUrl = request.getParameter("oldImgProduct");
+            throws ServletException, IOException {  
+        
+        String productIDStr = request.getParameter("txtProductID").trim();
+        String productName = request.getParameter("txtProductName").trim();
+        String priceStr = request.getParameter("txtPrice").trim();
+        String quantityStr = request.getParameter("txtQuantity").trim();
+        boolean status = request.getParameter("slStatus").trim().equals("1") ? true : false;
+        String des = request.getParameter("txtDescription").trim();
+        int categoryID = Integer.parseInt(request.getParameter("slCategory").trim());
+        String oldImageUrl = request.getParameter("oldImgProduct").trim();
         oldImageUrl = oldImageUrl.trim().equals(MyConstants.DEFAULT_PRODUCT_IMAGE_URL) ? "" : oldImageUrl;
         
-        String url = UPDATE_PRODUCT_PAGE;
+        Map<String, String> routes = AppRouting.routes;
+        
+        String url = routes.get("editProduct");
         ProductValidationBean productValidationBean = new ProductValidationBean();
         boolean valid = true;
         double tmpPrice = -1;
@@ -149,7 +98,7 @@ public class UpdateProductServlet extends HttpServlet {
                     boolean updatedSuccess = dao.updateProduct(product);
                     if (updatedSuccess) {
                         request.setAttribute("SUCCESS_MSG", "Product has been updated successfully");
-                        url = MANAGE_PRODUCT;
+                        url = routes.get("manageProduct");
                     }
                 } else {
                     valid = false;
@@ -166,13 +115,40 @@ public class UpdateProductServlet extends HttpServlet {
         } catch (Exception e) {
 
         } finally {
-            if(valid){
-                response.sendRedirect(url);
-            }
-            else{
-                request.getRequestDispatcher(url).forward(request, response);
-            }
+            request.getRequestDispatcher(url).forward(request, response);
         }
+        
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+       
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+        
     }
 
     /**

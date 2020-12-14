@@ -54,5 +54,5 @@ table thead tr {
 
 .quantity-control {
     border: 1px solid #edebeb; 
-
+    outline: none !important;
 }

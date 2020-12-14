@@ -4,6 +4,13 @@
     justify-content: space-between;
 }
 
+.error-section{
+    padding: 20px;
+    margin: 5px;
+    border-radius: 15px;
+    width: auto;
+}
+
 .checkout-section {
     padding: 20px;
     border: 1px solid #ebebeb;
@@ -30,6 +37,14 @@
 .checkout-section input[type="radio"]{
     width: initial;
     display: initial;
+}
+
+.checkout-section input:read-only{
+    background-color: #fafafa !important;
+}
+
+.checkout-section textarea:read-only{
+    background-color: #fafafa !important;
 }
 
 .checkout-section textarea {

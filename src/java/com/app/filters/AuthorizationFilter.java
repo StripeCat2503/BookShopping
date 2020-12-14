@@ -5,38 +5,48 @@
  */
 package com.app.filters;
 
+import com.app.daos.UserDAO;
+import com.app.dtos.UserDTO;
+import com.app.routes.AppRouting;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class AuthorizationFilter implements Filter {
-    
+
+    private final String NOT_FOUND = "not_found.html";
+
+    private static final Logger LOGGER = Logger.getLogger(AuthorizationFilter.class);
+
     private static final boolean debug = true;
-    
-    private final String LOGIN_PAGE = "login.jsp";
+
+    private final String FORBIDDEN = "forbidden.html";
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
     // configured. 
     private FilterConfig filterConfig = null;
-    
+
     public AuthorizationFilter() {
-    }    
-    
+    }
+
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
@@ -63,8 +73,8 @@ public class AuthorizationFilter implements Filter {
 	    log(buf.toString());
 	}
          */
-    }    
-    
+    }
+
     private void doAfterProcessing(ServletRequest request, ServletResponse response)
             throws IOException, ServletException {
         if (debug) {
@@ -102,14 +112,106 @@ public class AuthorizationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain)
             throws IOException, ServletException {
-        
+
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        
+
         String uri = req.getRequestURI();
+
         HttpSession session = req.getSession(false);
-        
-        chain.doFilter(request, response);
+
+        Map<String, String> routes = AppRouting.routes;
+
+        String[] adminRoutes = {
+            "admin", "admin.jsp", "addProduct", "add_product.jsp",
+            "manageProduct", "manage_product.jsp", "editProduct", "edit_product.jsp",
+            "AddProductServlet", "DeleteProductServlet", "UpdateProductServlet",
+            "order", "manage_order.jsp"
+        };
+        String[] userRoutes = {
+            "profile", "user_profile.jsp"
+        };
+        String[] guestRoutes = {
+            "cart", "cart.jsp", "checkout", "checkout.jsp",
+            "CheckoutServlet", "UpdateCartServlet", "DeleteCartItemServlet"
+        };
+
+        // check user is authenticated or not
+        boolean isAuthenticated = session != null && session.getAttribute("user") != null;
+
+        System.out.println("URI: " + uri);
+
+        String[] uriParts = uri.split("/");
+        String urlKey = uriParts[uriParts.length - 1];
+        String url = NOT_FOUND;
+
+        if (routes.containsKey(urlKey)) {
+            url = routes.get(urlKey);
+        }
+
+        boolean isNotAllowed = false;
+
+        if (urlKey.endsWith("Servlet")) {
+            url = urlKey;
+        }
+
+        boolean urlFound = arrayContains(adminRoutes, url)
+                || arrayContains(userRoutes, url) || arrayContains(guestRoutes, url);
+
+        if (isAuthenticated) {
+            try {
+                // check role of user
+                UserDTO loggedInUser = (UserDTO) session.getAttribute("user");
+                UserDAO dao = new UserDAO();
+                String roleID = loggedInUser.getRoleID();
+                String roleName = dao.getUserRoleName(roleID);
+
+                if (roleName.equals("Admin")) {
+                    if (!arrayContains(adminRoutes, url)) {
+                        url = FORBIDDEN;
+                        isNotAllowed = true;
+                    }
+                } else if (roleName.equals("User")) {
+                    if (!arrayContains(userRoutes, url) && !arrayContains(guestRoutes, url)) {
+                        url = FORBIDDEN;
+                        isNotAllowed = true;
+                    }
+                }
+
+            } catch (Exception ex) {
+                LOGGER.error("Error at when get user role name", ex);
+            }
+        } else {
+            if (arrayContains(adminRoutes, url) || arrayContains(userRoutes, url)) {
+                url = FORBIDDEN;
+                isNotAllowed = true;
+            }
+
+        }
+
+        if (urlFound) {
+            RequestDispatcher rd = req.getRequestDispatcher(url);
+            rd.forward(request, response);
+        } else {
+            chain.doFilter(request, response);
+        }
+
+//        if (!isNotAllowed) {
+//            chain.doFilter(request, response);
+//        } else {
+//            RequestDispatcher rd = req.getRequestDispatcher(url);
+//            rd.forward(request, response);
+//        }
+    }
+
+    private boolean arrayContains(String[] arr, String value) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i].contains(value)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -131,16 +233,16 @@ public class AuthorizationFilter implements Filter {
     /**
      * Destroy method for this filter
      */
-    public void destroy() {        
+    public void destroy() {
     }
 
     /**
      * Init method for this filter
      */
-    public void init(FilterConfig filterConfig) {        
+    public void init(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
         if (filterConfig != null) {
-            if (debug) {                
+            if (debug) {
                 log("AuthorizationFilter:Initializing filter");
             }
         }
@@ -159,20 +261,20 @@ public class AuthorizationFilter implements Filter {
         sb.append(")");
         return (sb.toString());
     }
-    
+
     private void sendProcessingError(Throwable t, ServletResponse response) {
-        String stackTrace = getStackTrace(t);        
-        
+        String stackTrace = getStackTrace(t);
+
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
                 PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);                
+                PrintWriter pw = new PrintWriter(ps);
                 pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
                 // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");                
-                pw.print(stackTrace);                
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
                 pw.print("</pre></body>\n</html>"); //NOI18N
                 pw.close();
                 ps.close();
@@ -189,7 +291,7 @@ public class AuthorizationFilter implements Filter {
             }
         }
     }
-    
+
     public static String getStackTrace(Throwable t) {
         String stackTrace = null;
         try {
@@ -203,9 +305,9 @@ public class AuthorizationFilter implements Filter {
         }
         return stackTrace;
     }
-    
+
     public void log(String msg) {
-        filterConfig.getServletContext().log(msg);        
+        filterConfig.getServletContext().log(msg);
     }
-    
+
 }

@@ -1,8 +1,16 @@
 
+<%@page import="java.util.List"%>
+<%@page import="com.app.dtos.ProductCategoryDTO"%>
+<%@page import="com.app.daos.ProductCategoryDAO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
+    <%
+        ProductCategoryDAO dao = new ProductCategoryDAO();
+        List<ProductCategoryDTO> categoryList = dao.getAllCategories();
+        request.setAttribute("CATEGORY_LIST", categoryList);
+    %>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Add new product</title>
@@ -59,7 +67,7 @@
             </div>
             <small class="text-success d-block my-3">${requestScope.SUCCESS_MSG}</small>           
             <input type="submit" value="Add product" class="btn btn-success">
-            <a href="ManageProductServlet" class="btn btn-danger">Cancel</a>
+            <a href="admin" class="btn btn-danger">Cancel</a>
         </form>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>

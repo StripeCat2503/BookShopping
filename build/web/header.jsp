@@ -49,17 +49,17 @@
                     </ul>
                 </li>       
             </ul>
-            <a href="cart.jsp" class="mx-3">
+            <a href="cart" class="mx-3">
                 <img width="28px" height="28px" src="icons/shopping-cart.svg" />
                 <span class="badge bg-danger rounded-pill"><%= numberOfCartItem%></span>
             </a>
             <c:if test="${empty sessionScope.user}">
-                <a href="LoginServlet" class="btn primary-bg-color text-light not-rounded mx-2">Sign In</a>
-                <a href="RegisterServlet" class="btn primary-border-color primary-text-color not-rounded mx-2">Sign Up</a>
+                <a href="login" class="btn primary-bg-color text-light not-rounded mx-2">Sign In</a>
+                <a href="register" class="btn primary-border-color primary-text-color not-rounded mx-2">Sign Up</a>
 
             </c:if>
             <c:if test="${not empty sessionScope.user}">
-                <a href="UserProfileServlet" class="mx-3 primary-text-color text-decoration-none">Welcome, ${sessionScope.user.fullName}!</a>
+                <a href="profile" class="mx-3 primary-text-color text-decoration-none">Welcome, ${sessionScope.user.fullName}!</a>
                 <a href="LogoutServlet" class="btn primary-bg-color text-light not-rounded">Logout</a>
             </c:if>
 

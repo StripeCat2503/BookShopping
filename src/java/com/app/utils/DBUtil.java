@@ -8,25 +8,25 @@ package com.app.utils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 /**
  *
  * @author DuyNK
  */
-public class DBUtil {
-    private static final String JDBC_DRIVER = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "123";
-    private static final String IP = "localhost";
-    private static final int PORT = 1433;
-    private static final String DB_NAME = "BookShopping";
+public class DBUtil {  
     
-    public static Connection getConnection() throws ClassNotFoundException, SQLException{
-        Class.forName(JDBC_DRIVER);
+    public static Connection getConnection() throws SQLException, NamingException{
         Connection con = null;
-        String url = "jdbc:sqlserver://" + IP + ":" + PORT + ";databaseName=" + DB_NAME;
+        
+        Context initContext = new InitialContext();
+        Context context = (Context) initContext.lookup("java:comp/env");
+        DataSource ds = (DataSource) context.lookup("BookShoppingDB");
                 
-        con = DriverManager.getConnection(url, USER, PASSWORD);
+        con = ds.getConnection();
         
         return con;
     }

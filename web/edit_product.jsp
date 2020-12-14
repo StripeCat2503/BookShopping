@@ -1,8 +1,28 @@
 
+<%@page import="com.app.dtos.ProductDTO"%>
+<%@page import="com.app.daos.ProductDAO"%>
+<%@page import="java.util.List"%>
+<%@page import="com.app.dtos.ProductCategoryDTO"%>
+<%@page import="com.app.daos.ProductCategoryDAO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
+    <%
+        String productIDStr = request.getParameter("productID");
+        ProductCategoryDAO dao = new ProductCategoryDAO();
+        List<ProductCategoryDTO> categoryList = dao.getAllCategories();
+        request.setAttribute("CATEGORY_LIST", categoryList);
+
+        if (productIDStr != null) {
+            ProductDAO productDAO = new ProductDAO();
+            int productID = Integer.parseInt(productIDStr);
+            ProductDTO product = productDAO.getProductByID(productID);
+            if (product != null) {
+                request.setAttribute("PRODUCT", product);
+            }
+        }
+    %>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Update product</title>
@@ -48,13 +68,13 @@
                     <label for="" class="d-block">Image</label>
                     <div class="my-3">
                         <img src="${requestScope.PRODUCT.image}" />
-                    </div>
-                    <input type="hidden" name="oldImgProduct" value="${requestScope.PRODUCT.image}"/>
-                    <input type="file" class="form-control" name="imgProduct">
                 </div>
-                <div class="form-group my-2">
-                    <label for="">Description</label>
-                    <textarea class="form-control" name="txtDescription">${requestScope.PRODUCT.description}</textarea>
+                <input type="hidden" name="oldImgProduct" value="${requestScope.PRODUCT.image}"/>
+                <input type="file" class="form-control" name="imgProduct">
+            </div>
+            <div class="form-group my-2">
+                <label for="">Description</label>
+                <textarea class="form-control" name="txtDescription">${requestScope.PRODUCT.description}</textarea>
             </div>
             <div class="form-group my-2">
                 <label for="">Category</label>
@@ -70,7 +90,7 @@
             </div>
             <small class="text-success d-block">${requestScope.SUCCESS_MSG}</small>           
             <input type="submit" value="Save" class="btn btn-success">
-            <a href="ManageProductServlet" class="btn btn-danger">Cancel</a>
+            <a href="manageProduct" class="btn btn-danger">Cancel</a>
         </form>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,4 +1,9 @@
 
+<%@page import="java.util.HashMap"%>
+<%@page import="java.util.Map"%>
+<%@page import="com.app.dtos.PaymentMethodDTO"%>
+<%@page import="java.util.List"%>
+<%@page import="com.app.daos.PaymentMethodDAO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="com.app.dtos.ProductDTO"%>
 <%@page import="com.app.dtos.CartDTO"%>
@@ -15,11 +20,44 @@
     <body>
         <jsp:include page="header.jsp"/>
         <%
+            Map<Integer, String> productErr = (HashMap<Integer, String>) request.getAttribute("PRODUCT_ERR");
+
             CartDTO cart = (CartDTO) session.getAttribute("CART");
+            if (cart == null || cart.getItems() == null || cart.getItems().isEmpty()) {
+                response.sendRedirect(getServletContext().getContextPath());
+            }
+
+            if (productErr != null) {
+        %>
+
+        <div class='toast-container mx-2 my-3'>
+            <%
+                for (String err : productErr.values()) {
+            %>
+
+            <div class="toast p-3" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide='false'>
+                <div class="toast-header">
+                    <div class="rounded me-2 bg-danger" style='width: 16px; height: 16px'></div>
+                    <strong class="me-auto">Product is not available!</strong>              
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <%= err%>
+                </div>
+            </div>
+
+            <%
+                }
+            %>
+        </div>
+        <%                            }
+
             if (cart != null) {
                 if (cart.getItems() != null && !cart.getItems().isEmpty()) {
+                    PaymentMethodDAO methodDAO = new PaymentMethodDAO();
+                    List<PaymentMethodDTO> methods = methodDAO.getAllPaymentMethods();
                     double total = 0;
-                    for(ProductDTO p : cart.getItems().values()){
+                    for (ProductDTO p : cart.getItems().values()) {
                         total += p.getPrice() * p.getQuantity();
                     }
         %>
@@ -30,30 +68,44 @@
                     <div class="mx-auto w-75">
                         <div class="my-3">
                             <label for="">Customer name</label>
-                            <input type="text" value="${sessionScope.user.fullName}" name="customerName" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
-                        </div>
-                        <div class="my-3">
-                            <label for="">Email</label>
-                            <input type="email" value="${sessionScope.user.email}" name="email" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
-                        </div>
-                        <div class="my-3">
-                            <label for="">Phone number</label>
-                            <input type="text" value="${sessionScope.user.phoneNumber}" name="phone" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
-                        </div>
-                        <div class="my-3">
-                            <label for="">Address</label>
-                            <textarea name="address" <c:if test="${not empty sessionScope.user}">readonly</c:if>>${sessionScope.user.address}</textarea>
-                        </div>
-                        <div class="my-3">
-                            <label for="">Payment method</label>
-                            <div class="d-flex align-items-center">
-                                <input type="radio" name="paymentMethod" id="" value="cod" checked="true"/>
-                                <span class="mx-2">Cash on Delivery (COD)</span>                           
+                            <input type="text" value="${not empty sessionScope.user.fullName ? sessionScope.user.fullName : requestScope.fullName}" name="customerName" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
+                            <small class='text-danger my-1'>${requestScope.fullNameError}</small>
                             </div>
-                            <div class="d-flex align-items-center">
-                                <input type="radio" name="paymentMethod" id="" value="momo"/>
-                                <span class="mx-2">Momo (Online payment)</span>                           
+                            <div class="my-3">
+                                <label for="">Email</label>
+                                <input type="email" value="${not empty sessionScope.user.email ? sessionScope.user.email : requestScope.email}" name="email" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
+                                <small class='text-danger my-1'>${requestScope.emailError}</small>
                             </div>
+                            <div class="my-3">
+                                <label for="">Phone number</label>
+                                <input type="text" value="${not empty sessionScope.user.phoneNumber ? sessionScope.user.phoneNumber : requestScope.phone}" name="phone" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
+                                <small class='text-danger my-1'>${requestScope.phoneError}</small>
+                            </div>
+                            <div class="my-3">
+                                <label for="">Address</label>
+                                <textarea name="address" <c:if test="${not empty sessionScope.user}">readonly</c:if>>${not empty sessionScope.user.address ? sessionScope.user.address : requestScope.address}</textarea>
+                                <small class='text-danger my-1'>${requestScope.addressError}</small>
+                            </div>
+                            <div class="my-3">
+                                <label for="">Payment method</label>
+                            <%
+                                if (methods != null) {
+                                    for (PaymentMethodDTO m : methods) {
+                            %>
+                            <div class="d-flex align-items-center">
+                                <input type="radio" name="paymentMethod" id="" value="<%= m.getPaymentMethodID()%>" <%
+                                    if (m.getPaymentMethodName().equals("Cash On Delivery")) {
+                                       %>
+                                       checked
+                                       <%
+                                           }
+                                       %>/>
+                                <span class="mx-2"><%= m.getPaymentMethodName()%></span>                           
+                            </div>
+                            <%
+                                    }
+                                }
+                            %>                        
                         </div>
                     </div>
 
@@ -64,27 +116,27 @@
                     <div class="total mb-3">
                         <div class="bg-light text-center text-uppercase">Total</div>
                         <div class="bg-secondary text-center text-light fw-bold">
-                            <span class="">$<%= total %></span>
+                            <span class="">$<%= total%></span>
                         </div>
                     </div>
                     <div class="order-items">
                         <%
-                            
-                            for (ProductDTO orderItem : cart.getItems().values()) {                            
+
+                            for (ProductDTO orderItem : cart.getItems().values()) {
                         %>
                         <div class="item">
                             <div class="">
-                                <div class="product-image" style="background-image: url('<%= orderItem.getImage() %>');"></div>
+                                <div class="product-image" style="background-image: url('<%= orderItem.getImage()%>');"></div>
                             </div>
                             <div class="">
-                                <div style='font-size: 12px'><%= orderItem.getProductName() %></div>
+                                <div style='font-size: 12px'><%= orderItem.getProductName()%></div>
                                 <div class="fw-bold">$<%= orderItem.getPrice()%></div>
                             </div>
                             <div style='font-size: 12px' class="text-end">
                                 Quantity: <strong><%= orderItem.getQuantity()%></strong>
                             </div>
                             <div class="fs-4 fw-bold text-end">
-                                $<%= orderItem.getPrice() * orderItem.getQuantity() %>
+                                $<%= orderItem.getPrice() * orderItem.getQuantity()%>
                             </div>
                         </div>
                         <%
@@ -103,6 +155,11 @@
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://code.jquery.com/jquery-2.2.4.js"></script>     
+        <script src="https://code.jquery.com/jquery-2.2.4.js"></script>   
+        <script>
+            $(document).ready(function () {
+                $('.toast').toast('show');
+            });
+        </script>
     </body>
 </html>

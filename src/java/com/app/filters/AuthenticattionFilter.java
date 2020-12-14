@@ -7,11 +7,12 @@ package com.app.filters;
 
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
+import com.app.routes.AppRouting;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
+import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -39,12 +40,10 @@ public class AuthenticattionFilter implements Filter {
 
     private static final Logger LOGGER = Logger.getLogger(AuthenticattionFilter.class);
 
-    private final String LOGIN_PAGE = "login.jsp";
-    private final String USER_PAGE = "index.jsp";
-    private final String ADMIN_PAGE = "admin.jsp";
     private final String NOT_FOUND = "not_found.html";
 
     public AuthenticattionFilter() {
+        AppRouting.initRoutes();
     }
 
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
@@ -80,47 +79,48 @@ public class AuthenticattionFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         String uri = req.getRequestURI();
+
         HttpSession session = req.getSession(false);
-        System.out.println("uri:" + uri);
+
+        Map<String, String> routes = AppRouting.routes;
 
         // check user is authenticated or not
         boolean isAuthenticated = session != null && session.getAttribute("user") != null;
-        boolean isLoginRequest = uri.endsWith("LoginServlet");
-        boolean isLoginPage = uri.endsWith("login.jsp");
-        boolean isHomePage = uri.endsWith("/");
-        boolean isRegisterPage = uri.endsWith("register.jsp");
-        boolean isRegisterRequest = uri.endsWith("RegisterServlet");
+
+        System.out.println("URI: " + uri);
+
+        String[] uriParts = uri.split("/");
+        String urlKey = uriParts[uriParts.length - 1];
+        String url = NOT_FOUND;
+
+        if (routes.containsKey(urlKey)) {
+            url = routes.get(urlKey);
+        }
 
         if (isAuthenticated) {
-            String url = NOT_FOUND;
             try {
                 // check role of user
                 UserDTO loggedInUser = (UserDTO) session.getAttribute("user");
-                UserDAO dao = new UserDAO();
-                String roleID = loggedInUser.getRoleID();
-                String roleName = dao.getUserRoleName(roleID);
 
-                if (isLoginRequest || isLoginPage || isHomePage
-                        || isRegisterPage || isRegisterRequest) {
+                if (loggedInUser != null) {
+                    UserDAO dao = new UserDAO();
+                    String roleID = loggedInUser.getRoleID();
+                    String roleName = dao.getUserRoleName(roleID);
+
                     if (roleName.equals("Admin")) {
-                        url = ADMIN_PAGE;
+                        url = routes.get("admin");
                     } else if (roleName.equals("User")) {
-                        url = USER_PAGE;
+                        url = routes.get("home");
                     }
-
-                    RequestDispatcher rd = req.getRequestDispatcher(url);
-                    rd.forward(request, response);
                 }
 
             } catch (Exception ex) {
                 LOGGER.error("Error at when get usser role name", ex);
-            } 
+            }
         }
 
-        if (!isAuthenticated && isLoginPage) {
-            RequestDispatcher rd = req.getRequestDispatcher(LOGIN_PAGE);
-            rd.forward(request, response);
-        }
+        RequestDispatcher rd = req.getRequestDispatcher(url);
+        rd.forward(request, response);
 
         chain.doFilter(request, response);
 

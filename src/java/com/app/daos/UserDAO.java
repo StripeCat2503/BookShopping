@@ -5,14 +5,15 @@
  */
 package com.app.daos;
 
+import com.app.dtos.OrderDTO;
 import com.app.dtos.UserDTO;
 import com.app.utils.DBUtil;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import org.apache.log4j.Logger;
 
 /**
@@ -34,11 +35,14 @@ public class UserDAO {
             + "u.roleID = r.roleID AND u.roleID = ?";
     
     private final String SQL_CHECK_USER = "SELECT userID FROM tblUsers WHERE userID = ?";
+    
+    private final String SQL_GET_USER_BY_ID = "SELECT fullName, email, address, phoneNumber "
+            + "FROM tblUsers WHERE userID = ?";
 
-    public boolean insertUser(UserDTO user) throws SQLException {
+    public String insertUser(UserDTO user) throws SQLException {
         Connection con = null;
         PreparedStatement stm = null;
-        int rows = -1;
+        String insertedUserID = null;
 
         try {
             con = DBUtil.getConnection();
@@ -53,7 +57,11 @@ public class UserDAO {
                 stm.setString(7, user.getRoleID());
                 stm.setTimestamp(8, new Timestamp(user.getCreatedDate().getTime()));
 
-                rows = stm.executeUpdate();
+                int rows = stm.executeUpdate();
+                
+                if(rows > 0){
+                    insertedUserID = user.getUserID();
+                }
             }
 
         } catch (Exception e) {
@@ -67,12 +75,7 @@ public class UserDAO {
             }
         }
 
-        if (rows > 0) {
-            return true;
-        } else {
-            return false;
-        }
-        
+        return insertedUserID;
     }
     
     public UserDTO authenticateUser(String userID, String password) throws SQLException {
@@ -179,5 +182,46 @@ public class UserDAO {
         }
         
         return isExisted;
+    }
+    
+    public UserDTO getUserByID(String userID) throws SQLException {
+        Connection con = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        UserDTO user = null;
+
+        try {
+            con = DBUtil.getConnection();
+            if (con != null) {
+                stm = con.prepareStatement(SQL_GET_USER_BY_ID);
+                stm.setString(1, userID);
+                rs = stm.executeQuery();
+
+                if (rs.next()) {                    
+                    
+                    String fullName = rs.getString("fullName");
+                    String email = rs.getString("email");
+                    String addr = rs.getString("address");
+                    String phoneNumber = rs.getString("phoneNumber");
+                    
+                    user = new UserDTO("", "", fullName, addr, email, phoneNumber, null, "");
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+
+        return user;
     }
 }

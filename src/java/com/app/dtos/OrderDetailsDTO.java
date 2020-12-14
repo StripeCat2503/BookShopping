@@ -11,7 +11,7 @@ package com.app.dtos;
  */
 public class OrderDetailsDTO {
     private int orderDetailsID;
-    private int productID;
+    private ProductDTO product;
     private int orderID;
     private double price;
     private int quantity;
@@ -19,27 +19,19 @@ public class OrderDetailsDTO {
     public OrderDetailsDTO() {
     }
 
-    public OrderDetailsDTO(int productID, int orderID, double price, int quantity) {
-        this.productID = productID;
+    public OrderDetailsDTO(ProductDTO product, int orderID, double price, int quantity) {
+        this.product = product;
         this.orderID = orderID;
         this.price = price;
         this.quantity = quantity;
     }
-
+   
     public int getOrderDetailsID() {
         return orderDetailsID;
     }
 
     public void setOrderDetailsID(int orderDetailsID) {
         this.orderDetailsID = orderDetailsID;
-    }
-
-    public int getProductID() {
-        return productID;
-    }
-
-    public void setProductID(int productID) {
-        this.productID = productID;
     }
 
     public int getOrderID() {
@@ -64,6 +56,14 @@ public class OrderDetailsDTO {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public ProductDTO getProduct() {
+        return product;
+    }
+
+    public void setProduct(ProductDTO product) {
+        this.product = product;
     }
     
     
