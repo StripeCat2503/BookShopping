@@ -1,4 +1,6 @@
 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.app.dtos.OrderDTO"%>
 <%@page import="java.util.List"%>
@@ -28,42 +30,35 @@
 
         <div class="content">
             <h3 class="text-uppercase">Order Management</h3>
-            <%
-                SimpleDateFormat fm = new SimpleDateFormat("dd/MM/yyyy");
-                OrderDAO orderDAO = new OrderDAO();
-                List<OrderDTO> orders = orderDAO.getAllOrders();
-                if (orders != null && !orders.isEmpty()) {
-            %>
-            <table border="1">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Total</th>
-                        <th>Order Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <%
-                        for (OrderDTO order : orders) {
+            <c:if test="${not empty requestScope.ORDERS}">
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Total</th>
+                            <th>Order Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach items="${requestScope.ORDERS}" var="order">
+                            <tr>
+                                <td>
+                                    <c:url var="orderDetailsUrl" value="OrderDetailsServlet">
+                                        <c:param name="id" value="${order.orderID}" />
+                                    </c:url>
+                                    <a href="${orderDetailsUrl}">#${order.orderID}</a>
+                                </td>
+                                <td class="fw-bold">$${order.totalPrice}</td>
+                                <td>
+                                    <fmt:formatDate var="orderDate" pattern="dd/MM/yyyy" value="${order.orderDate}"/>
+                                    ${orderDate}
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </c:if>
 
-                    %>
-
-                    <tr>
-                        <td>
-                            <a href="OrderDetailsServlet?id=<%= order.getOrderID()%>">#<%= order.getOrderID()%></a>
-                        </td>
-                        <td class="fw-bold">$<%= order.getTotalPrice()%></td>
-                        <td><%= fm.format(order.getOrderDate())%></td>
-                    </tr>
-
-                    <%
-                        }
-                    %>
-                </tbody>
-            </table>
-            <%
-                }
-            %>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>

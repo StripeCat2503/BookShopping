@@ -30,6 +30,11 @@
                 <c:if test="${not empty requestScope.passwordError}">
                     <small class="text-danger my-1">${requestScope.passwordError}</small>
                 </c:if>
+                <label for="">Confirm Password</label>
+                <input type="password" name="txtConfirmPassword">
+                <c:if test="${not empty requestScope.confirmPasswordError}">
+                    <small class="text-danger my-1">${requestScope.confirmPasswordError}</small>
+                </c:if>
                 <label for="">Full Name</label>
                 <input type="text" name="txtFullName" value="${requestScope.fullName}">
                 <c:if test="${not empty requestScope.fullNameError}">

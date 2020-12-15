@@ -34,7 +34,7 @@ public class ProductDAO {
 
     private final String SQL_SEARCH_PRODUCT_BY_NAME = "SELECT productID, productName, price, quantity, status, image, description, categoryID "
             + "FROM tblProducts WHERE productName LIKE ?";
-
+       
     private final String SQL_GET_PRODUCT_BY_NAME = "SELECT productID "
             + "FROM tblProducts WHERE productName = ?";
 
@@ -319,13 +319,13 @@ public class ProductDAO {
                     int quantity = rs.getInt("quantity");
                     boolean isActive = rs.getBoolean("status");
                     String image = rs.getString("image");
-                    String des = rs.getString("des");
+                    image = image.isEmpty() ? MyConstants.DEFAULT_PRODUCT_IMAGE_URL : image.replace("\\", "/");
+                    String des = rs.getString("description");
                     int categoryID = rs.getInt("categoryID");
-                    String categoryName = rs.getString("categoryName");
+                  
+                    ProductCategoryDTO category = new ProductCategoryDTO(categoryID, null);
 
-                    ProductCategoryDTO category = new ProductCategoryDTO(categoryID, categoryName);
-
-                    ProductDTO product = new ProductDTO(productName, price, quantity, isActive, image, des, category);
+                    ProductDTO product = new ProductDTO(productID, productName, price, quantity, isActive, image, des, category);
                     searchResults.add(product);
                 }
             }
@@ -344,7 +344,7 @@ public class ProductDAO {
 
         return searchResults;
     }
-
+    
     public boolean isExistedProduct(String productName) throws SQLException {
         Connection con = null;
         PreparedStatement stm = null;

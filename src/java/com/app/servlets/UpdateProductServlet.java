@@ -14,9 +14,9 @@ import com.app.dtos.ProductDTO;
 import com.app.routes.AppRouting;
 import com.app.utils.MyUtils;
 import com.app.utils.ValidationUtils;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
@@ -33,8 +33,9 @@ import javax.servlet.http.HttpServletResponse;
         maxRequestSize = 1024 * 1024 * 100
 )
 public class UpdateProductServlet extends HttpServlet {
+
     private final String UPDATE_PRODUCT_PAGE = "edit_product.jsp";
-    private final String MANAGE_PRODUCT = "ManageProductServlet";
+    private final String MANAGE_PRODUCT = AppRouting.routes.get("manageProduct");
     private final String ERROR_PAGE = "not_found.html";
 
     /**
@@ -47,8 +48,59 @@ public class UpdateProductServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {  
-        
+            throws ServletException, IOException {
+
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+        String url = ERROR_PAGE;
+
+        try {
+            int productID = Integer.parseInt(request.getParameter("productID"));
+            ProductCategoryDAO dao = new ProductCategoryDAO();
+            List<ProductCategoryDTO> categoryList = dao.getAllCategories();
+            request.setAttribute("CATEGORY_LIST", categoryList);
+
+            ProductDAO productDAO = new ProductDAO();
+
+            ProductDTO product = productDAO.getProductByID(productID);
+            if (product != null) {
+                request.setAttribute("PRODUCT", product);
+            }
+
+            url = UPDATE_PRODUCT_PAGE;
+
+        } catch (Exception e) {
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
+        }
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+
         String productIDStr = request.getParameter("txtProductID").trim();
         String productName = request.getParameter("txtProductName").trim();
         String priceStr = request.getParameter("txtPrice").trim();
@@ -58,10 +110,9 @@ public class UpdateProductServlet extends HttpServlet {
         int categoryID = Integer.parseInt(request.getParameter("slCategory").trim());
         String oldImageUrl = request.getParameter("oldImgProduct").trim();
         oldImageUrl = oldImageUrl.trim().equals(MyConstants.DEFAULT_PRODUCT_IMAGE_URL) ? "" : oldImageUrl;
-        
-        Map<String, String> routes = AppRouting.routes;
-        
-        String url = routes.get("editProduct");
+
+        String url = ERROR_PAGE;
+
         ProductValidationBean productValidationBean = new ProductValidationBean();
         boolean valid = true;
         double tmpPrice = -1;
@@ -84,12 +135,21 @@ public class UpdateProductServlet extends HttpServlet {
                 int quantity = Integer.parseInt(quantityStr);
                 tmpPrice = price;
                 tmpQuantity = quantity;
+
                 // update product image
                 String uploadDir = MyConstants.PRODUCT_IMAGE_DIR;
                 String imgParam = "imgProduct";
                 String imageUrl = MyUtils.uploadFile(request, imgParam, uploadDir);
+
+                if (!imageUrl.isEmpty()) {
+                    // remove old image file if exists
+                    String basePath = getServletContext().getRealPath("");
+                    String currentImagePath = basePath + File.separator + oldImageUrl;
+                    MyUtils.deteteFile(currentImagePath);
+                }
+
                 imageUrl = imageUrl.isEmpty() ? oldImageUrl : imageUrl;
-                
+
                 ProductDTO product = new ProductDTO(productID, productName, price, quantity, status, imageUrl, des, new ProductCategoryDTO(categoryID));
 
                 boolean isValidProduct = productValidationBean.isValidProduct(product);
@@ -98,7 +158,8 @@ public class UpdateProductServlet extends HttpServlet {
                     boolean updatedSuccess = dao.updateProduct(product);
                     if (updatedSuccess) {
                         request.setAttribute("SUCCESS_MSG", "Product has been updated successfully");
-                        url = routes.get("manageProduct");
+                        request.setAttribute("PRODUCT", product);
+                        url = UPDATE_PRODUCT_PAGE;
                     }
                 } else {
                     valid = false;
@@ -108,6 +169,7 @@ public class UpdateProductServlet extends HttpServlet {
                 int productID = Integer.parseInt(productIDStr);
                 request.setAttribute("PRODUCT", new ProductDTO(productID, productName, tmpPrice, tmpQuantity, status, "", des, new ProductCategoryDTO(categoryID)));
                 request.setAttribute("PRODUCT_ERROR", productValidationBean);
+                url = UPDATE_PRODUCT_PAGE;
             }
             ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
             List<ProductCategoryDTO> categoryList = categoryDAO.getAllCategories();
@@ -117,38 +179,6 @@ public class UpdateProductServlet extends HttpServlet {
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-        
-    }
-
-    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
-    /**
-     * Handles the HTTP <code>GET</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-       
-    }
-
-    /**
-     * Handles the HTTP <code>POST</code> method.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        processRequest(request, response);
-        
     }
 
     /**

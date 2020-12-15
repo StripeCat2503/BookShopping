@@ -5,12 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
-    <%
-        ProductDAO dao = new ProductDAO();
-        List<ProductDTO> products = dao.getAllProducts();
-        request.setAttribute("PRODUCT_LIST", products);
-    %>
+<html>    
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Manage Product</title>
@@ -66,7 +61,11 @@
                                 <a class="btn btn-primary text-uppercase" href="editProduct?productID=${product.productID}">Edit</a>
                             </td>
                             <td>
-                                <a class="btn btn-danger text-uppercase" href="DeleteProductServlet?productID=${product.productID}">Delete</a>
+                                <c:url var="deleteProductUrl" value="DeleteProductServlet">
+                                    <c:param name="productID"  value="${product.productID}"/>
+                                    <c:param name="image"  value="${product.image}"/>
+                                </c:url>
+                                <a class="btn btn-danger text-uppercase" href="${deleteProductUrl}">Delete</a>
                             </td>
                         </tr>
                     </c:forEach>

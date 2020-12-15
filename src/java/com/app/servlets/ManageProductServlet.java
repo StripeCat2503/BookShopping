@@ -6,11 +6,9 @@
 package com.app.servlets;
 
 import com.app.daos.ProductDAO;
-import com.app.routes.AppRouting;
-import com.app.utils.MyUtils;
-import java.io.File;
+import com.app.dtos.ProductDTO;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,10 +18,10 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DuyNK
  */
-public class DeleteProductServlet extends HttpServlet {
+public class ManageProductServlet extends HttpServlet {
 
-    private final String FAIL = "not_found.html";
-    private final String SUCCESS = AppRouting.routes.get("manageProduct");
+    private final String MANAGE_PRODUCT_PAGE = "manage_product.jsp";
+    private final String ERROR = "not_found.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,30 +34,7 @@ public class DeleteProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        Map<String, String> routes = AppRouting.routes;
 
-        String url = FAIL;
-
-        try {
-            String productIDStr = request.getParameter("productID");
-            int productID = Integer.parseInt(productIDStr);
-
-            ProductDAO dao = new ProductDAO();
-
-            boolean success = dao.deleteProduct(productID);
-            if (success) {
-                // remove old image file if exists
-                String imageUrl = request.getParameter("image");
-                String basePath = getServletContext().getRealPath("");
-                String currentImagePath = basePath + File.separator + imageUrl;
-                MyUtils.deteteFile(currentImagePath);
-                url = SUCCESS;
-            }
-        } catch (Exception e) {
-        } finally {
-            request.getRequestDispatcher(url).forward(request, response);
-        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -75,6 +50,17 @@ public class DeleteProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
+        String url = ERROR;
+
+        try {
+            ProductDAO dao = new ProductDAO();
+            List<ProductDTO> products = dao.getAllProducts();         
+            request.setAttribute("PRODUCT_LIST", products);
+            url = MANAGE_PRODUCT_PAGE;
+        } catch (Exception e) {
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
+        }
     }
 
     /**

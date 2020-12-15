@@ -14,113 +14,108 @@
     </head>
     <body>
         <jsp:include page="header.jsp"/>
-        <div class="cart-page my-5 mx-2">
-            <%
-                CartDTO cart = (CartDTO) session.getAttribute("CART");
+        <div class="cart-page my-5 mx-2">           
 
-                if (cart != null && !cart.getItems().isEmpty()) {
-                    double cartTotal = 0;
-            %>
+            <c:if test="${not empty sessionScope.CART and not empty sessionScope.CART.items}">
+                <section class="cart">
+                    <form action="UpdateCartServlet" method="POST">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>BOOK</th>
+                                    <th>PRICE</th>
+                                    <th>QUANTITY</th>
+                                    <th>TOTAL</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:forEach items="${sessionScope.CART.items}" var="item">
+                                    <tr>
+                                        <td>
+                                            <c:url var="deleteCartItemUrl" value="DeleteCartItemServlet">
+                                                <c:param name="productID" value="${item.key}"/>
+                                            </c:url>
+                                            <a href="${deleteCartItemUrl}">
+                                                <img src="icons/remove_icon.svg" />
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <div class="p-1">
+                                                <div class="product-image mx-auto"
+                                                     style="background: url('${item.value.image}') no-repeat; background-position: center;background-size: cover;">
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>${item.value.productName}</td>
+                                        <td>$${item.value.price}</td>
+                                        <td>
+                                            <div class="input-group mx-auto" style="width: 120px;">
+                                                <input type="hidden" value="${item.key}" class="product-id" name="productID"/>
+                                                <button id="btnIncrease-${item.key}" class="input-group-btn quantity-btn">+</button>
+                                                <input readonly="true" type="number" name="quantity-${item.key}" id="quantity-${item.key}" 
+                                                       class="form-control quantity-control text-center" value="${item.value.quantity}">
+                                                <button id="btnDecrease-${item.key}" class="input-group-btn quantity-btn">-</button>
+                                            </div>
+                                        </td>
+                                        <td>$${item.value.price * item.value.quantity}</td>
+                                    </tr>
+                                </c:forEach>
 
-            <section class="cart">
-                <form action="UpdateCartServlet" method="POST">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th>BOOK</th>
-                                <th>PRICE</th>
-                                <th>QUANTITY</th>
-                                <th>TOTAL</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <%
-                                for (ProductDTO product : cart.getItems().values()) {
-                                    cartTotal += product.getPrice() * product.getQuantity();
-                            %>
-                            <tr>
-                                <td>
-                                    <a href="DeleteCartItemServlet?productID=<%= product.getProductID()%>">
-                                        <img src="icons/remove_icon.svg" />
-                                    </a>
-                                </td>
-                                <td>
-                                    <div class="p-1">
-                                        <div class="product-image mx-auto"
-                                             style="background: url('<%= product.getImage().isEmpty() ? "product_images/default_product.png" : product.getImage().replace("\\", "/")%>') no-repeat; background-position: center;background-size: cover;">
-                                        </div>
-                                    </div>
-                                </td>
-                                <td><%= product.getProductName()%></td>
-                                <td>$<%= product.getPrice()%></td>
-                                <td>
-                                    <div class="input-group mx-auto" style="width: 120px;">
-                                        <input type="hidden" value="<%= product.getProductID() %>" class="product-id" name="productID"/>
-                                        <button id="btnIncrease-<%= product.getProductID()%>" class="input-group-btn quantity-btn">+</button>
-                                        <input readonly="true" type="number" name="quantity-<%= product.getProductID()%>" id="quantity-<%= product.getProductID()%>" 
-                                               class="form-control quantity-control text-center" value="<%= product.getQuantity()%>">
-                                        <button id="btnDecrease-<%= product.getProductID()%>" class="input-group-btn quantity-btn">-</button>
-                                    </div>
-                                </td>
-                                <td>$<%= product.getPrice() * product.getQuantity()%></td>
-                            </tr>
-                            <%
-                                }
-                            %>
+                            </tbody>
+                        </table>
+                        <input type="submit" value = "UPDATE CART" class="btn btn-success my-2" />
+                    </form>
+                </section>
 
-                        </tbody>
-                    </table>
-                    <input type="submit" value = "UPDATE CART" class="btn btn-success my-2" />
-                </form>
-            </section>
+                <section class="cart-total p-2">
+                    <h4 class="text-uppercase text-center">Cart Total</h4>
+                    <div class="text-center fw-bold fs-1">$${sessionScope.CART.total}</div>
+                    <div class="text-center">
+                        <a href="checkout" class="d-block btn-checkout">CHECKOUT</a>
+                    </div>
 
-            <section class="cart-total p-2">
-                <h4 class="text-uppercase text-center">Cart Total</h4>
-                <div class="text-center fw-bold fs-1">$<%= cartTotal%></div>
-                <div class="text-center">
-                    <a href="checkout" class="d-block btn-checkout">CHECKOUT</a>
+                </section>
+            </c:if>
+
+            <c:if test="${empty sessionScope.CART or empty sessionScope.CART.items}">
+                <div class="p-5 border m-3 w-50">
+                    <h4 class="text-uppercase text-muted mb-3">There's no book in cart!</h4>
+                    <a href="${pageContext.servletContext.contextPath}" class="btn btn-danger text-light d-block" style="padding: 20px 0;">Go Shopping</a>
                 </div>
-
-            </section>
-            <%
-            } else {
-            %>
-            <h3>There's no book in cart!</h3>
-            <%
-                }
-            %>
+            </c:if>          
 
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
         <script src="https://code.jquery.com/jquery-2.2.4.js"></script>     
         <script>
-            $(document).ready(function(){
+            $(document).ready(function () {
                 const productIDFields = $('.product-id')
                 var productIds = []
-                
-                for(var i = 0; i < productIDFields.length; i++){
+
+                for (var i = 0; i < productIDFields.length; i++) {
                     productIds.push(productIDFields[i].value)
                 }
-                
-                for(var i = 0; i < productIds.length; i++){
+
+                for (var i = 0; i < productIds.length; i++) {
                     var id = productIds[i]
                     const quantityInput = $('#quantity-' + id)
                     const increaseBtn = $('#btnIncrease-' + id)
                     const decreaseBtn = $('#btnDecrease-' + id)
-                    
-                    increaseBtn.click(function(e){
+
+                    increaseBtn.click(function (e) {
                         e.preventDefault()
                         var currentQuantity = parseInt(quantityInput.val())
                         quantityInput.attr('value', currentQuantity + 1)
                     })
-                    
-                    decreaseBtn.click(function(e){
-                        e.preventDefault()                      
+
+                    decreaseBtn.click(function (e) {
+                        e.preventDefault()
                         var currentQuantity = parseInt(quantityInput.val())
-                        if(currentQuantity <= 1) return;
+                        if (currentQuantity <= 1)
+                            return;
                         quantityInput.attr('value', currentQuantity - 1)
                     })
                 }

@@ -14,12 +14,16 @@ import java.util.Map;
  */
 public class CartDTO {
     private Map<Integer, ProductDTO> items;
+    private double total;
+    private int numberOfItems;
 
     public Map<Integer, ProductDTO> getItems() {
         return this.items;
     }
 
     public CartDTO() {
+        total = 0;
+        numberOfItems = 0;
     }
 
     public void addItemToCart(ProductDTO product){
@@ -33,6 +37,8 @@ public class CartDTO {
         }
         
         this.items.put(product.getProductID(), product);
+        updateTotal();
+        numberOfItems = this.items.size();
     }
     
     public void removeItemFromCart(int productID){
@@ -40,6 +46,8 @@ public class CartDTO {
         
         if(this.items.containsKey(productID)){
             this.items.remove(productID);
+            updateTotal();
+            numberOfItems = this.items.size();
         }
     }
     
@@ -50,7 +58,26 @@ public class CartDTO {
             ProductDTO p = this.items.get(productID);
             p.setQuantity(newQuantity);
             this.items.replace(productID, p);
+            updateTotal();
         }
     }
+    
+    private void updateTotal(){
+        if(this.items != null){
+            this.total = 0;
+            for(ProductDTO p : this.items.values()){
+                this.total += p.getPrice() * p.getQuantity();
+            }
+        }
+    }
+
+    public double getTotal() {
+        return total;
+    }
+
+    public int getNumberOfItems() {
+        return numberOfItems;
+    }
+
     
 }

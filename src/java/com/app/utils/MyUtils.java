@@ -72,6 +72,17 @@ public class MyUtils {
         return imageUrl;
     }
     
+    public static boolean deteteFile(String filePath) throws IOException, ServletException {
+        boolean deleted = false;
+        
+        File file = new File(filePath);
+        if(file.exists()){
+            deleted = file.delete();
+        }
+        
+        return deleted;
+    }
+    
     private static String getFileName(Part part) {
         final String partHeader = part.getHeader("content-disposition");
         System.out.println("*****partHeader :" + partHeader);

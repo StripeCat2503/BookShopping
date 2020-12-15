@@ -5,11 +5,10 @@
  */
 package com.app.daos;
 
-import com.app.dtos.OrderDTO;
+import com.app.dtos.RoleDTO;
 import com.app.dtos.UserDTO;
 import com.app.utils.DBUtil;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,8 +27,9 @@ public class UserDAO {
             + "address, email, phoneNumber, roleID, createdDate) "
             + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     
-    private final String SQL_GET_USER = "SELECT userID, fullName, email, address, phoneNumber, roleID "
-            + "FROM tblUsers WHERE userID = ? AND password = ?";
+    private final String SQL_GET_USER = "SELECT u.userID, u.fullName, u.email, u.address, u.phoneNumber, u.roleID, r.roleName "
+            + "FROM tblUsers AS u JOIN tblRoles AS r ON u.roleID = r.roleID "
+            + "WHERE u.userID = ? AND u.password = ?";
     
     private final String SQL_GET_ROLE_NAME = "SELECT roleName FROM tblUsers AS u, tblRoles AS r WHERE "
             + "u.roleID = r.roleID AND u.roleID = ?";
@@ -54,7 +54,7 @@ public class UserDAO {
                 stm.setString(4, user.getAddress());
                 stm.setString(5, user.getEmail());
                 stm.setString(6, user.getPhoneNumber());
-                stm.setString(7, user.getRoleID());
+                stm.setString(7, user.getRole().getRoleID());
                 stm.setTimestamp(8, new Timestamp(user.getCreatedDate().getTime()));
 
                 int rows = stm.executeUpdate();
@@ -100,7 +100,10 @@ public class UserDAO {
                     user.setAddress(rs.getString("address"));
                     user.setEmail(rs.getString("email"));
                     user.setPhoneNumber(rs.getString("phoneNumber"));
-                    user.setRoleID(rs.getString("roleID"));
+                    String roleID = rs.getString("roleID");
+                    String roleName = rs.getString("roleName");
+                    RoleDTO role = new RoleDTO(roleID, roleName);
+                    user.setRole(role);
                 }
             }
 
@@ -204,7 +207,7 @@ public class UserDAO {
                     String addr = rs.getString("address");
                     String phoneNumber = rs.getString("phoneNumber");
                     
-                    user = new UserDTO("", "", fullName, addr, email, phoneNumber, null, "");
+                    user = new UserDTO("", "", fullName, addr, email, phoneNumber, null, null);
 
                 }
             }

@@ -44,6 +44,8 @@
         <url-pattern>/checkout.jsp</url-pattern>
         <url-pattern>/manage_order.jsp</url-pattern>
         <url-pattern>/order</url-pattern>
+        <url-pattern>/search</url-pattern>
+        
     </filter-mapping>
     <!--    <filter-mapping>
         <filter-name>DispatcherFilter</filter-name>
@@ -103,6 +105,18 @@
         <servlet-name>OrderDetailsServlet</servlet-name>
         <servlet-class>com.app.servlets.OrderDetailsServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ManageProductServlet</servlet-name>
+        <servlet-class>com.app.servlets.ManageProductServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ManageOrderServlet</servlet-name>
+        <servlet-class>com.app.servlets.ManageOrderServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>SearchProductServlet</servlet-name>
+        <servlet-class>com.app.servlets.SearchProductServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -150,6 +164,18 @@
     <servlet-mapping>
         <servlet-name>OrderDetailsServlet</servlet-name>
         <url-pattern>/OrderDetailsServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageProductServlet</servlet-name>
+        <url-pattern>/ManageProductServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageOrderServlet</servlet-name>
+        <url-pattern>/ManageOrderServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>SearchProductServlet</servlet-name>
+        <url-pattern>/SearchProductServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

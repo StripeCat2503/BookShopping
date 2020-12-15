@@ -5,6 +5,7 @@
  */
 package com.app.servlets;
 
+import com.app.constants.Role;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
 import com.app.routes.AppRouting;
@@ -29,6 +30,9 @@ public class LoginServlet extends HttpServlet {
     private static final Logger LOGGER = Logger.getLogger(LoginServlet.class);
 
     private final String NOT_FOUND = "not_found.html";
+    private final String ADMIN_PAGE = "admin.jsp";
+    private final String USER_PAGE = "index.jsp";
+    private final String LOGIN_PAGE = "login.jsp";
 
     private final String LOGIN_ERR_MSG = "Invalid username or password!";
 
@@ -46,8 +50,6 @@ public class LoginServlet extends HttpServlet {
         String userID = request.getParameter("txtUserID");
         String password = request.getParameter("txtPassword");
 
-        Map<String, String> routes = AppRouting.routes;
-
         String url = NOT_FOUND;
 
         if (!userID.isEmpty() && !password.isEmpty()) {
@@ -57,15 +59,16 @@ public class LoginServlet extends HttpServlet {
                 if (loggedInUser != null) {
                     HttpSession session = request.getSession();
                     session.setAttribute("user", loggedInUser);
-                    String roleID = loggedInUser.getRoleID();
+                    String roleID = loggedInUser.getRole().getRoleID();
                     String roleName = dao.getUserRoleName(roleID);
-                    if (roleName.equals("Admin")) {
-                        url = routes.get("admin");
-                    } else if (roleName.equals("User")) {
-                        url = routes.get("home");
+                    if (roleName.equals(Role.ADMIN)) {
+                        url = ADMIN_PAGE;
+                    } else if (roleName.equals(Role.USER)) {
+                        url = USER_PAGE;
                     }
 
                 } else {
+                    url = LOGIN_PAGE;
                     request.setAttribute("loginError", LOGIN_ERR_MSG);
                 }
             } catch (SQLException ex) {

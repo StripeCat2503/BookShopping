@@ -126,14 +126,15 @@ public class AuthorizationFilter implements Filter {
             "admin", "admin.jsp", "addProduct", "add_product.jsp",
             "manageProduct", "manage_product.jsp", "editProduct", "edit_product.jsp",
             "AddProductServlet", "DeleteProductServlet", "UpdateProductServlet",
-            "order", "manage_order.jsp"
+            "order", "manage_order.jsp", "ManageProductServlet", "ManageOrderServlet"
         };
         String[] userRoutes = {
-            "profile", "user_profile.jsp"
+            "profile", "user_profile.jsp"           
         };
         String[] guestRoutes = {
             "cart", "cart.jsp", "checkout", "checkout.jsp",
-            "CheckoutServlet", "UpdateCartServlet", "DeleteCartItemServlet"
+            "CheckoutServlet", "UpdateCartServlet", "DeleteCartItemServlet",
+            "SearchProductServlet", "search"
         };
 
         // check user is authenticated or not
@@ -148,8 +149,7 @@ public class AuthorizationFilter implements Filter {
         if (routes.containsKey(urlKey)) {
             url = routes.get(urlKey);
         }
-
-        boolean isNotAllowed = false;
+    
 
         if (urlKey.endsWith("Servlet")) {
             url = urlKey;
@@ -163,18 +163,18 @@ public class AuthorizationFilter implements Filter {
                 // check role of user
                 UserDTO loggedInUser = (UserDTO) session.getAttribute("user");
                 UserDAO dao = new UserDAO();
-                String roleID = loggedInUser.getRoleID();
+                String roleID = loggedInUser.getRole().getRoleID();
                 String roleName = dao.getUserRoleName(roleID);
 
                 if (roleName.equals("Admin")) {
                     if (!arrayContains(adminRoutes, url)) {
                         url = FORBIDDEN;
-                        isNotAllowed = true;
+                        
                     }
                 } else if (roleName.equals("User")) {
                     if (!arrayContains(userRoutes, url) && !arrayContains(guestRoutes, url)) {
                         url = FORBIDDEN;
-                        isNotAllowed = true;
+                       
                     }
                 }
 
@@ -184,7 +184,7 @@ public class AuthorizationFilter implements Filter {
         } else {
             if (arrayContains(adminRoutes, url) || arrayContains(userRoutes, url)) {
                 url = FORBIDDEN;
-                isNotAllowed = true;
+              
             }
 
         }

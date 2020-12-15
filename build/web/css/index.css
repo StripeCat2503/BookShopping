@@ -52,3 +52,39 @@
 .product-grid .product-card .btn-add-to-cart:disabled{
     background-color: #b2a5b5;
 }
+
+.not-found{
+    height: 80vh;
+    display: flex;
+    justify-content: center;   
+    border: 1px solid #fafafa;
+    margin: 20px 50px;
+}
+
+.search-form{
+    width: 50%;
+    margin: 20px auto;
+    height: 50px;
+}
+
+.search-form form *{
+    box-sizing: border-box;
+    
+}
+
+.search-bar{
+    width: 70%;
+    padding: 0 5px;
+    height: 50px;
+    display: block-inline;
+}
+
+.btn-search{
+    width: 20%;
+    border: none;
+    color: white;
+    background-color: #5d99c2;
+    /*padding: 10px 30px;*/
+    height: 50px;
+    display: block-inline;
+}

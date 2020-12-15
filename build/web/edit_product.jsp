@@ -8,21 +8,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-    <%
-        String productIDStr = request.getParameter("productID");
-        ProductCategoryDAO dao = new ProductCategoryDAO();
-        List<ProductCategoryDTO> categoryList = dao.getAllCategories();
-        request.setAttribute("CATEGORY_LIST", categoryList);
-
-        if (productIDStr != null) {
-            ProductDAO productDAO = new ProductDAO();
-            int productID = Integer.parseInt(productIDStr);
-            ProductDTO product = productDAO.getProductByID(productID);
-            if (product != null) {
-                request.setAttribute("PRODUCT", product);
-            }
-        }
-    %>
+   
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Update product</title>

@@ -19,7 +19,8 @@ import javax.servlet.http.HttpSession;
  * @author DuyNK
  */
 public class AddToCartServlet extends HttpServlet {
-    private final String SUCCESS = "index.jsp";
+    private final String HOME_PAGE = "index.jsp";
+    private final String SEARCH_RESULT = "SearchProductServlet";
     private final String FAIL = "error.html";
 
     /**
@@ -36,6 +37,7 @@ public class AddToCartServlet extends HttpServlet {
         String url = FAIL;
         
         try {
+            String searchValue = request.getParameter("q");
             int productID = Integer.parseInt(request.getParameter("productID"));
             String productName = request.getParameter("productName");
             double price = Double.parseDouble(request.getParameter("price"));
@@ -63,14 +65,20 @@ public class AddToCartServlet extends HttpServlet {
             cart.addItemToCart(product);
             
             session.setAttribute("CART", cart);
-            url = SUCCESS;
+           
+            url = HOME_PAGE;
+            
+            if(searchValue != null && !searchValue.isEmpty()){
+                url = SEARCH_RESULT;
+                request.setAttribute("SEARVH_VALUE", searchValue);
+            }
             
         } catch (Exception e) {
         }
         finally{
             request.getRequestDispatcher(url).forward(request, response);
         }
-    }
+    }  
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

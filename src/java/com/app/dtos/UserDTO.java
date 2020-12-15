@@ -15,17 +15,18 @@ public class UserDTO {
 
     private String userID;
     private String password;
+    private String confirmPassword;
     private String fullName;
     private String address;
     private String email;
     private String phoneNumber;
     private Date createdDate;
-    private String roleID;
+    private RoleDTO role;
 
     public UserDTO() {
     }
 
-    public UserDTO(String userID, String password, String fullName, String address, String email, String phoneNumber, Date createdDate, String roleID) {
+    public UserDTO(String userID, String password, String fullName, String address, String email, String phoneNumber, Date createdDate, RoleDTO role) {
         this.userID = userID;
         this.password = password;
         this.fullName = fullName;
@@ -33,8 +34,21 @@ public class UserDTO {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.createdDate = createdDate;
-        this.roleID = roleID;
+        this.role = role;
     }
+
+    public UserDTO(String userID, String password, String confirmPassword, String fullName, String address, String email, String phoneNumber, Date createdDate, RoleDTO role) {
+        this.userID = userID;
+        this.password = password;
+        this.confirmPassword = confirmPassword;
+        this.fullName = fullName;
+        this.address = address;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.createdDate = createdDate;
+        this.role = role;
+    }
+    
 
     public String getUserID() {
         return userID;
@@ -92,12 +106,21 @@ public class UserDTO {
         this.createdDate = createdDate;
     }
 
-    public String getRoleID() {
-        return roleID;
+    public RoleDTO getRole() {
+        return role;
     }
 
-    public void setRoleID(String roleID) {
-        this.roleID = roleID;
+    public void setRole(RoleDTO role) {
+        this.role = role;
     }
+
+    public String getConfirmPassword() {
+        return confirmPassword;
+    }
+
+    public void setConfirmPassword(String confirmPassword) {
+        this.confirmPassword = confirmPassword;
+    }
+
 
 }

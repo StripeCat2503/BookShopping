@@ -34,18 +34,20 @@ public class DeleteCartItemServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = ERROR;
-        
+
         try {
             int productID = Integer.parseInt(request.getParameter("productID"));
             HttpSession session = request.getSession();
             CartDTO cart = (CartDTO) session.getAttribute("CART");
-            if(cart != null){
+            if (cart != null) {
                 cart.removeItemFromCart(productID);
                 url = SUCCESS;
+
+                session.setAttribute("CART", cart);
+            
             }
         } catch (Exception e) {
-        }
-        finally{
+        } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
     }

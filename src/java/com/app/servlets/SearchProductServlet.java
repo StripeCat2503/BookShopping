@@ -6,11 +6,9 @@
 package com.app.servlets;
 
 import com.app.daos.ProductDAO;
-import com.app.routes.AppRouting;
-import com.app.utils.MyUtils;
-import java.io.File;
+import com.app.dtos.ProductDTO;
 import java.io.IOException;
-import java.util.Map;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,10 +18,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author DuyNK
  */
-public class DeleteProductServlet extends HttpServlet {
-
-    private final String FAIL = "not_found.html";
-    private final String SUCCESS = AppRouting.routes.get("manageProduct");
+public class SearchProductServlet extends HttpServlet {
+    private final String SUCCESS = "product_search_result.jsp";
+    private final String FAIL = "product_search_result.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,30 +33,22 @@ public class DeleteProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        Map<String, String> routes = AppRouting.routes;
-
         String url = FAIL;
-
+        
         try {
-            String productIDStr = request.getParameter("productID");
-            int productID = Integer.parseInt(productIDStr);
-
+            String searchValue = request.getParameter("q");
             ProductDAO dao = new ProductDAO();
-
-            boolean success = dao.deleteProduct(productID);
-            if (success) {
-                // remove old image file if exists
-                String imageUrl = request.getParameter("image");
-                String basePath = getServletContext().getRealPath("");
-                String currentImagePath = basePath + File.separator + imageUrl;
-                MyUtils.deteteFile(currentImagePath);
-                url = SUCCESS;
-            }
+            List<ProductDTO> results = dao.searchProductsByName(searchValue);
+            request.setAttribute("SEARCH_PRODUCTS", results);
+      
+            request.setAttribute("SEARCH_VALUE", searchValue);
+            url = SUCCESS;
         } catch (Exception e) {
-        } finally {
+        }
+        finally{
             request.getRequestDispatcher(url).forward(request, response);
         }
+        
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

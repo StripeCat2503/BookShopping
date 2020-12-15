@@ -15,6 +15,7 @@ import com.app.dtos.CartDTO;
 import com.app.dtos.OrderDTO;
 import com.app.dtos.OrderDetailsDTO;
 import com.app.dtos.ProductDTO;
+import com.app.dtos.RoleDTO;
 import com.app.dtos.UserDTO;
 import com.app.routes.AppRouting;
 import java.io.IOException;
@@ -114,7 +115,7 @@ public class CheckoutServlet extends HttpServlet {
                         String roleID = roleDAO.getRoleIdByRoleName("User");
                         Date createdDate = new Date(new java.util.Date().getTime());
 
-                        UserDTO user = new UserDTO(userID, "Defaultpwd123", customerName, addr, email, phoneNumber, createdDate, roleID);
+                        UserDTO user = new UserDTO(userID, "Defaultpwd123", customerName, addr, email, phoneNumber, createdDate, new RoleDTO(roleID, null));
                         UserRegisterValidationBean validationBean = new UserRegisterValidationBean();
                         boolean isValidUser = validationBean.validateUser(user);
                         if (isValidUser) {
@@ -169,6 +170,7 @@ public class CheckoutServlet extends HttpServlet {
                         if (insertOrderDetailsSuccess) {
                             url = SUCCESS;
                             session.removeAttribute("CART");
+                        
                         }
 
                     }

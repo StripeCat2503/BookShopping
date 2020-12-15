@@ -104,7 +104,7 @@ public class AuthenticattionFilter implements Filter {
 
                 if (loggedInUser != null) {
                     UserDAO dao = new UserDAO();
-                    String roleID = loggedInUser.getRoleID();
+                    String roleID = loggedInUser.getRole().getRoleID();
                     String roleName = dao.getUserRoleName(roleID);
 
                     if (roleName.equals("Admin")) {

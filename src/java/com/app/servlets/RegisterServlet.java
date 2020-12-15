@@ -8,14 +8,12 @@ package com.app.servlets;
 import com.app.beans.UserRegisterValidationBean;
 import com.app.daos.RoleDAO;
 import com.app.daos.UserDAO;
+import com.app.dtos.RoleDTO;
 import com.app.dtos.UserDTO;
 import com.app.routes.AppRouting;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -50,6 +48,7 @@ public class RegisterServlet extends HttpServlet {
 
         String userID = request.getParameter("txtUserID").trim();
         String password = request.getParameter("txtPassword");
+        String confirmPassword = request.getParameter("txtConfirmPassword");
         String fullName = request.getParameter("txtFullName").trim();
         String email = request.getParameter("txtEmail").trim();
         String address = request.getParameter("txtAddress");
@@ -64,7 +63,7 @@ public class RegisterServlet extends HttpServlet {
         try {
             String roleID = roleDAO.getRoleIdByRoleName("User");
             if (roleID != null) {
-                UserDTO newUser = new UserDTO(userID, password, fullName, address, email, phoneNumber, createdDate, roleID);
+                UserDTO newUser = new UserDTO(userID, password, confirmPassword, fullName, address, email, phoneNumber, createdDate, new RoleDTO(roleID, null));
                 // validate user info
                 UserRegisterValidationBean validationBean = new UserRegisterValidationBean();
                 boolean isValidUser = validationBean.validateUser(newUser);
@@ -87,6 +86,7 @@ public class RegisterServlet extends HttpServlet {
                     // set validation error
                     request.setAttribute("userIdError", validationBean.getUserIdError());
                     request.setAttribute("passwordError", validationBean.getPasswordError());
+                    request.setAttribute("confirmPasswordError", validationBean.getConfirmPasswordError());
                     request.setAttribute("fullNameError", validationBean.getFullNameError());
                     request.setAttribute("emailError", validationBean.getEmailError());
                     request.setAttribute("phoneError", validationBean.getPhoneError());

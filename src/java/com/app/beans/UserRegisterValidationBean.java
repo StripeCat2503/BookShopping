@@ -19,6 +19,7 @@ public class UserRegisterValidationBean implements Serializable{
     private String emailError;
     private String addressError;
     private String phoneError;   
+    private String confirmPasswordError;   
 
     public UserRegisterValidationBean() {
     }
@@ -70,6 +71,15 @@ public class UserRegisterValidationBean implements Serializable{
     public void setPhoneError(String phoneError) {
         this.phoneError = phoneError;
     }
+
+    public String getConfirmPasswordError() {
+        return confirmPasswordError;
+    }
+
+    public void setConfirmPasswordError(String confirmPasswordError) {
+        this.confirmPasswordError = confirmPasswordError;
+    }
+    
     
     private final String REGEX_USERNAME = "^[a-z]\\w{4,20}$";
     private final String REGEX_PASSWORD = "^[A-Z]\\w{4,20}$";
@@ -110,6 +120,10 @@ public class UserRegisterValidationBean implements Serializable{
         }
         if(!user.getPassword().matches(REGEX_PASSWORD)){
             this.passwordError = "Password must start with an uppercase letter and contains 5 - 21 characters!";
+            isValidUser = false;
+        }
+        if(!user.getConfirmPassword().equals(user.getPassword())){
+            this.confirmPasswordError = "Confirm password does not match!";
             isValidUser = false;
         }
         if(!user.getEmail().matches(REGEX_EMAIL)){
