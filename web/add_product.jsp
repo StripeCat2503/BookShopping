@@ -80,7 +80,7 @@
                 </div>
                 <small class="text-success d-block my-3">${requestScope.SUCCESS_MSG}</small>           
                 <input type="submit" value="Add product" class="btn btn-success">
-                <a href="admin" class="btn btn-danger">Cancel</a>
+                <a href="manageProduct" class="btn btn-danger">Cancel</a>
             </form>
         </div>
 

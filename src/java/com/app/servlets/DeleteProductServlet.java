@@ -10,7 +10,6 @@ import com.app.routes.AppRouting;
 import com.app.utils.MyUtils;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,9 +35,7 @@ public class DeleteProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        Map<String, String> routes = AppRouting.routes;
-
+       
         String url = FAIL;
 
         try {
@@ -58,7 +55,8 @@ public class DeleteProductServlet extends HttpServlet {
             }
         } catch (Exception e) {
         } finally {
-            request.getRequestDispatcher(url).forward(request, response);
+            response.sendRedirect(url);
+//            request.getRequestDispatcher(url).forward(request, response);
         }
     }
 

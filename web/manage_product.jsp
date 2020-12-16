@@ -29,6 +29,14 @@
             <div class="my-2">
                 <a href="addProduct" class="btn btn-success">ADD PRODUCT</a>
             </div>
+            <div class="search my-2 w-50">
+                <form method="GET" action="adminSearch">
+                    <input name="q" class="w-50" type="text" placeholder="Search products" style="display: block-inline; height: 40px;" value="${requestScope.SEARCH_VALUE}"/>
+                    <button type="submit" class="btn btn-primary" style="display: block-inline; height: 40px;">
+                        <img src="icons/search.svg" width="16" height="16"/>
+                    </button>
+                </form>
+            </div>
             <table class="table table-light table-hover">
                 <thead>
                     <tr>

@@ -58,3 +58,22 @@ form input[type='submit']{
     margin-top: 20px;
     height: 48px;
 }
+
+.btn-google{
+    color: black !important;
+    border: 1px solid black;
+    padding: 15px 0;
+    text-align: center;
+    transition: 0.2s;
+    box-shadow: 0px 1px 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+.btn-google:hover{
+    background: #eda59f;
+    border: 1px solid transparent;
+}
+
+.btn-google img{
+    width: 30px;
+    height: 30px;
+}

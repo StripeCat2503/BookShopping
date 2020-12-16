@@ -30,3 +30,7 @@
     width: calc(100% - 300px);
     padding: 20px;
 }
+
+form *{
+    box-sizing: border-box;
+}

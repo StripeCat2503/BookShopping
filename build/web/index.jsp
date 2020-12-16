@@ -41,45 +41,50 @@
                 </form>
             </div>
         </div>
-        <div class="product-grid mx-auto">
-            <c:forEach items="${requestScope.PRODUCT_LIST}" var="product">
-                <c:if test="${product.status eq true}">
-                    <div class="product-card" <c:if test="${product.quantity <= 0}">style='opacity: 0.5;'</c:if>>
-                            <form action="AddToCartServlet" method="POST">
-                                <div>
-                                    <div class="mx-auto product-image" style="background-image: url('${product.image}');">
+        <c:if test="${not empty requestScope.PRODUCT_LIST}">
+            <div class="product-grid mx-auto">
+                <c:forEach items="${requestScope.PRODUCT_LIST}" var="product">
+                    <c:if test="${product.status eq true}">
+                        <div class="product-card" <c:if test="${product.quantity <= 0}">style='opacity: 0.5;'</c:if>>
+                                <form action="AddToCartServlet" method="POST">
+                                    <div>
+                                        <div class="mx-auto product-image" style="background-image: url('${product.image}');">
+
+                                    </div>
 
                                 </div>
+                                <div class="info text-center">
+                                    <p class="name text-uppercase py-2 fs-6 fw-bold">${product.productName}</p>                           
+                                    <p>${product.description eq '' ? 'No description...' : product.description}</p>
+                                    <p class="price fs-1 fw-bold">$${product.price}</p>                           
+                                </div>
+                                <c:if test="${product.quantity <= 0}">
+                                    <div class='status text-danger text-uppercase fw-bold'>
+                                        Not available
+                                    </div>
+                                </c:if>
+                                <c:if test="${product.quantity > 0}">
+                                    <div class='status text-success text-uppercase fw-bold'>
+                                        available
+                                    </div>
+                                </c:if>
+                                <div class="w-100">
 
+                                    <input type="hidden" name="productID" value="${product.productID}">
+                                    <input type="hidden" name="price" value="${product.price}">
+                                    <input type="hidden" name="productName" value="${product.productName}">
+                                    <input type="hidden" name="imgProduct" value="${product.image}">
+                                    <input type="submit" class="btn-add-to-cart w-100 text-light" value="Add to cart" <c:if test="${product.quantity <= 0}">disabled</c:if>/>
+                                    </div>
+                                </form>
                             </div>
-                            <div class="info text-center">
-                                <p class="name text-uppercase py-2 fs-6 fw-bold">${product.productName}</p>                           
-                                <p>${product.description eq '' ? 'No description...' : product.description}</p>
-                                <p class="price fs-1 fw-bold">$${product.price}</p>                           
-                            </div>
-                            <c:if test="${product.quantity <= 0}">
-                                <div class='status text-danger text-uppercase fw-bold'>
-                                    Not available
-                                </div>
-                            </c:if>
-                            <c:if test="${product.quantity > 0}">
-                                <div class='status text-success text-uppercase fw-bold'>
-                                    available
-                                </div>
-                            </c:if>
-                            <div class="w-100">
-
-                                <input type="hidden" name="productID" value="${product.productID}">
-                                <input type="hidden" name="price" value="${product.price}">
-                                <input type="hidden" name="productName" value="${product.productName}">
-                                <input type="hidden" name="imgProduct" value="${product.image}">
-                                <input type="submit" class="btn-add-to-cart w-100 text-light" value="Add to cart" <c:if test="${product.quantity <= 0}">disabled</c:if>/>
-                                </div>
-                            </form>
-                        </div>
-                </c:if>
-            </c:forEach>
-        </div>
+                    </c:if>
+                </c:forEach>
+            </div>
+        </c:if>
+        <c:if test="${empty requestScope.PRODUCT_LIST}">
+            <h3 class="text-center mt-5">There's no product available!</h3>
+        </c:if>
         <jsp:include page="footer.jsp" />
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>

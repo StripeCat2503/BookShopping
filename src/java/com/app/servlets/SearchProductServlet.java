@@ -19,8 +19,9 @@ import javax.servlet.http.HttpServletResponse;
  * @author DuyNK
  */
 public class SearchProductServlet extends HttpServlet {
-    private final String SUCCESS = "product_search_result.jsp";
-    private final String FAIL = "product_search_result.jsp";
+    private final String USER_SEARCH_RESULT_PAGE = "product_search_result.jsp";
+    private final String ERROR = "error.html";
+    
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,16 +34,17 @@ public class SearchProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String url = FAIL;
+        String url = ERROR;
         
         try {
             String searchValue = request.getParameter("q");
             ProductDAO dao = new ProductDAO();
             List<ProductDTO> results = dao.searchProductsByName(searchValue);
-            request.setAttribute("SEARCH_PRODUCTS", results);
-      
+            request.setAttribute("SEARCH_PRODUCTS", results);     
             request.setAttribute("SEARCH_VALUE", searchValue);
-            url = SUCCESS;
+            
+            url = USER_SEARCH_RESULT_PAGE;
+            
         } catch (Exception e) {
         }
         finally{

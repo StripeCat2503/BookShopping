@@ -21,6 +21,8 @@ public class RoleDAO {
     
     private final String SQL_GET_ROLE_ID_BY_NAME = "SELECT roleID FROM tblRoles "
             + "WHERE roleName = ?";
+    private final String SQL_GET_ROLE_NAME_BY_ID = "SELECT roleName FROM tblRoles "
+            + "WHERE roleID = ?";
     
     public String getRoleIdByRoleName(String roleName) throws SQLException{
         Connection con = null;
@@ -50,5 +52,35 @@ public class RoleDAO {
         }
         
         return roleID;
+    }
+    
+    public String getRoleNameByRoleID(String roleID) throws SQLException{
+        Connection con = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        
+        String roleName = null;
+        
+        try {
+            con = DBUtil.getConnection();
+            if(con != null){
+                stm = con.prepareStatement(SQL_GET_ROLE_NAME_BY_ID);
+                stm.setString(1, roleID);
+                rs = stm.executeQuery();
+                if(rs.next()){
+                    roleName = rs.getString("roleName");
+                }
+            }
+            
+        } catch (Exception e) {
+            LOGGER.error("Error when get role id!", e);
+        }
+        finally{
+            if(rs != null) rs.close();
+            if(stm != null) stm.close();
+            if(con != null) con.close();
+        }
+        
+        return roleName;
     }
 }

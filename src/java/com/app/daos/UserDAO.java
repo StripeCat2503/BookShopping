@@ -36,8 +36,9 @@ public class UserDAO {
     
     private final String SQL_CHECK_USER = "SELECT userID FROM tblUsers WHERE userID = ?";
     
-    private final String SQL_GET_USER_BY_ID = "SELECT fullName, email, address, phoneNumber "
-            + "FROM tblUsers WHERE userID = ?";
+    private final String SQL_GET_USER_BY_ID = "SELECT u.userID, u.fullName, u.email, u.address, u.phoneNumber, u.roleID, r.roleName "
+            + "FROM tblUsers AS u JOIN tblRoles AS r ON u.roleID = r.roleID "
+            + "WHERE u.userID = ?";
 
     public String insertUser(UserDTO user) throws SQLException {
         Connection con = null;
@@ -201,13 +202,15 @@ public class UserDAO {
                 rs = stm.executeQuery();
 
                 if (rs.next()) {                    
-                    
+                   
                     String fullName = rs.getString("fullName");
                     String email = rs.getString("email");
                     String addr = rs.getString("address");
                     String phoneNumber = rs.getString("phoneNumber");
+                    String roleID = rs.getString("roleID");
+                    String roleName = rs.getString("roleName");
                     
-                    user = new UserDTO("", "", fullName, addr, email, phoneNumber, null, null);
+                    user = new UserDTO(userID, "", fullName, addr, email, phoneNumber, null, new RoleDTO(roleID, roleName));
 
                 }
             }

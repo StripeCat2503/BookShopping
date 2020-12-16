@@ -68,27 +68,34 @@
                                 </tr>
                             </thead>
                             <tbody>                             
-                                
-                                <c:forEach items="${requestScope.ORDER_DETAILS}" var="details">
-                                    
-                                    <tr>
-                                        <td>
-                                            <div class="product-image" style="background-image: url('${details.product.image}');"></div>
-                                        </td>
-                                        <td>
-                                            <span class="">${details.product.productName}</span>
-                                        </td>
-                                        <td>
-                                            <span>$${details.price}</span>
-                                        </td>
-                                        <td>
-                                            <span>${details.quantity}</span>
-                                        </td>
-                                        <td>
-                                            <strong>$${details.quantity * details.price}</strong>
-                                        </td>
-                                    </tr>                              
-                            </c:forEach>                           
+
+                                <c:if test="${not empty requestScope.ORDER_DETAILS}">
+                                    <c:forEach items="${requestScope.ORDER_DETAILS}" var="details">
+
+                                        <tr>
+                                            <td>
+                                                <div class="product-image" style="background-image: url('${details.product.image}');"></div>
+                                            </td>
+                                            <td>
+                                                <span class="">${details.product.productName}</span>
+                                            </td>
+                                            <td>
+                                                <span>$${details.price}</span>
+                                            </td>
+                                            <td>
+                                                <span>${details.quantity}</span>
+                                            </td>
+                                            <td>
+                                                <strong>$${details.quantity * details.price}</strong>
+                                            </td>
+                                        </tr>                              
+                                    </c:forEach>    
+                                </c:if>        
+                                        <c:if test="${empty requestScope.ORDER_DETAILS}">
+                                            <tr>
+                                                <td colspan="5" class="text-danger" style="height: 50px;">Product is not available!</td>
+                                            </tr>
+                                        </c:if>
 
                             </tbody>
                         </table>

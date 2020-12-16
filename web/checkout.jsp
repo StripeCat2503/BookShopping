@@ -68,22 +68,22 @@
                     <div class="mx-auto w-75">
                         <div class="my-3">
                             <label for="">Customer name</label>
-                            <input type="text" value="${not empty sessionScope.user.fullName ? sessionScope.user.fullName : requestScope.fullName}" name="customerName" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
+                            <input type="text" value="${not empty sessionScope.user.fullName ? sessionScope.user.fullName : requestScope.fullName}" name="customerName" <c:if test="${not empty sessionScope.user.fullName}">readonly</c:if>>
                             <small class='text-danger my-1'>${requestScope.fullNameError}</small>
                             </div>
                             <div class="my-3">
                                 <label for="">Email</label>
-                                <input type="email" value="${not empty sessionScope.user.email ? sessionScope.user.email : requestScope.email}" name="email" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
+                                <input type="email" value="${not empty sessionScope.user.email ? sessionScope.user.email : requestScope.email}" name="email" <c:if test="${not empty sessionScope.user.email}">readonly</c:if>>
                                 <small class='text-danger my-1'>${requestScope.emailError}</small>
                             </div>
                             <div class="my-3">
                                 <label for="">Phone number</label>
-                                <input type="text" value="${not empty sessionScope.user.phoneNumber ? sessionScope.user.phoneNumber : requestScope.phone}" name="phone" <c:if test="${not empty sessionScope.user}">readonly</c:if>>
+                                <input type="text" value="${not empty sessionScope.user.phoneNumber ? sessionScope.user.phoneNumber : requestScope.phone}" name="phone" <c:if test="${not empty sessionScope.user.phoneNumber}">readonly</c:if>>
                                 <small class='text-danger my-1'>${requestScope.phoneError}</small>
                             </div>
                             <div class="my-3">
                                 <label for="">Address</label>
-                                <textarea name="address" <c:if test="${not empty sessionScope.user}">readonly</c:if>>${not empty sessionScope.user.address ? sessionScope.user.address : requestScope.address}</textarea>
+                                <textarea name="address" <c:if test="${not empty sessionScope.user.address}">readonly</c:if>>${not empty sessionScope.user.address ? sessionScope.user.address : requestScope.address}</textarea>
                                 <small class='text-danger my-1'>${requestScope.addressError}</small>
                             </div>
                             <div class="my-3">

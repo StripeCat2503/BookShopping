@@ -3,60 +3,19 @@
     <filter>
         <filter-name>AuthenticattionFilter</filter-name>
         <filter-class>com.app.filters.AuthenticattionFilter</filter-class>
-    </filter>
+    </filter>   
     <filter>
-        <filter-name>AuthorizationFilter</filter-name>
-        <filter-class>com.app.filters.AuthorizationFilter</filter-class>
-    </filter>
-    <!--    <filter>
         <filter-name>DispatcherFilter</filter-name>
         <filter-class>com.app.filters.DispatcherFilter</filter-class>
-    </filter>-->
+    </filter>
     <filter-mapping>
         <filter-name>AuthenticattionFilter</filter-name>
-        <url-pattern>/</url-pattern>
-        <url-pattern>/login</url-pattern>
-        <url-pattern>/login.jsp</url-pattern>
-        <url-pattern>/register</url-pattern>
-        <url-pattern>/register.jsp</url-pattern>
-    </filter-mapping>
+        <url-pattern>/*</url-pattern>     
+    </filter-mapping>  
     <filter-mapping>
-        <filter-name>AuthorizationFilter</filter-name>
-        <url-pattern>/admin</url-pattern>
-        <url-pattern>/admin.jsp</url-pattern>
-        <url-pattern>/addProduct</url-pattern>
-        <url-pattern>/add_product.jsp</url-pattern>
-        <url-pattern>/manageProduct</url-pattern>
-        <url-pattern>/manage_product.jsp</url-pattern>
-        <url-pattern>/editProduct</url-pattern>
-        <url-pattern>/edit_product.jsp</url-pattern>
-        <url-pattern>/AddProductServlet</url-pattern>
-        <url-pattern>/DeleteProductServlet</url-pattern>
-        <url-pattern>/UpdateProductServlet</url-pattern>
-        <url-pattern>/profile</url-pattern>
-        <url-pattern>/user_profile.jsp</url-pattern>
-        <url-pattern>/CheckoutServlet</url-pattern>
-        <url-pattern>/UpdateCartServlet</url-pattern>
-        <url-pattern>/DeleteCartItemServlet</url-pattern>
-        <url-pattern>/cart</url-pattern>
-        <url-pattern>/cart.jsp</url-pattern>
-        <url-pattern>/checkout</url-pattern>
-        <url-pattern>/checkout.jsp</url-pattern>
-        <url-pattern>/manage_order.jsp</url-pattern>
-        <url-pattern>/order</url-pattern>
-        <url-pattern>/search</url-pattern>
-        
-    </filter-mapping>
-    <!--    <filter-mapping>
         <filter-name>DispatcherFilter</filter-name>
-        <url-pattern>/CheckoutServlet</url-pattern>
-        <url-pattern>/UpdateCartServlet</url-pattern>
-        <url-pattern>/DeleteCartItemServlet</url-pattern>
-        <url-pattern>/cart</url-pattern>
-        <url-pattern>/cart.jsp</url-pattern>
-        <url-pattern>/checkout</url-pattern>
-        <url-pattern>/checkout.jsp</url-pattern>
-    </filter-mapping>-->
+        <url-pattern>/*</url-pattern>      
+    </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
         <servlet-class>com.app.servlets.LoginServlet</servlet-class>
@@ -117,6 +76,14 @@
         <servlet-name>SearchProductServlet</servlet-name>
         <servlet-class>com.app.servlets.SearchProductServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>LoginGoogleServlet</servlet-name>
+        <servlet-class>com.app.servlets.LoginGoogleServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminSearchServlet</servlet-name>
+        <servlet-class>com.app.servlets.AdminSearchServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -176,6 +143,14 @@
     <servlet-mapping>
         <servlet-name>SearchProductServlet</servlet-name>
         <url-pattern>/SearchProductServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginGoogleServlet</servlet-name>
+        <url-pattern>/LoginGoogleServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminSearchServlet</servlet-name>
+        <url-pattern>/AdminSearchServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

@@ -12,8 +12,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <h1>User profile</h1>
-        <h4>UserID: ${sessionScope.user.userID}</h4>
+        <h1>User profile</h1>    
         <h4>Full name: ${sessionScope.user.fullName}</h4>
         <h4>Email: ${sessionScope.user.email}</h4>
         <h4>Phone number: ${sessionScope.user.phoneNumber}</h4>

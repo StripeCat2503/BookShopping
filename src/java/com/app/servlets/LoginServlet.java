@@ -52,9 +52,10 @@ public class LoginServlet extends HttpServlet {
 
         String url = NOT_FOUND;
 
-        if (!userID.isEmpty() && !password.isEmpty()) {
-            UserDAO dao = new UserDAO();
-            try {
+        try {
+            if (!userID.isEmpty() && !password.isEmpty()) {
+                UserDAO dao = new UserDAO();
+
                 UserDTO loggedInUser = dao.authenticateUser(userID, password);
                 if (loggedInUser != null) {
                     HttpSession session = request.getSession();
@@ -71,14 +72,18 @@ public class LoginServlet extends HttpServlet {
                     url = LOGIN_PAGE;
                     request.setAttribute("loginError", LOGIN_ERR_MSG);
                 }
-            } catch (SQLException ex) {
-                LOGGER.error("Error while login user", ex);
-            } finally {
-                RequestDispatcher rd = request.getRequestDispatcher(url);
-                rd.forward(request, response);
-            }
 
+            }
+            else{
+                url = LOGIN_PAGE;
+            }
+        } catch (SQLException ex) {
+            LOGGER.error("Error while login user", ex);
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
         }
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
