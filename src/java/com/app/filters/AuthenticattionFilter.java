@@ -8,17 +8,17 @@ package com.app.filters;
 import com.app.constants.Role;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
+import com.app.payments.momo.Momo;
 import com.app.routes.AppRouting;
+import com.mservice.shared.utils.LogUtils;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
-import java.util.Map;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -33,34 +33,12 @@ import org.apache.log4j.Logger;
  */
 public class AuthenticattionFilter implements Filter {
 
-//    private final String[] ADMIN_ROUTES = {
-//        "admin", "admin.jsp", "addProduct", "add_product.jsp",
-//        "manageProduct", "manage_product.jsp", "editProduct", "edit_product.jsp",
-//        "AddProductServlet", "DeleteProductServlet", "UpdateProductServlet",
-//        "order", "manage_order.jsp", "ManageProductServlet", "ManageOrderServlet",
-//        "OrderDetailsServlet", "order_details.jsp",
-//        "LogoutServlet", "", "manage_product_search.jsp",
-//        "AdminSearchServlet", "adminSearch"
-//    };
-//
-//    private final String[] USER_ROUTES = {
-//        "profile", "user_profile.jsp", "", "LogoutServlet"
-//    };
-//    
-//    private final String[] GUEST_ROUTES = {
-//        "cart", "cart.jsp", "checkout", "checkout.jsp",
-//        "CheckoutServlet", "UpdateCartServlet", "DeleteCartItemServlet",
-//        "SearchProductServlet", "search", "SearchProductServlet", "product_search_result.jsp",
-//        "index.jsp"
-//    };
-    
     private final List<String> ADMIN_ROUTES;
 
     private final List<String> USER_ROUTES;
-    
+
     private final List<String> GUEST_ROUTES;
-    
-   
+
     private final String LOGIN_PAGE = "login.jsp";
     private final String ADMIN_PAGE = "admin.jsp";
     private final String USER_PAGE = "index.jsp";
@@ -83,6 +61,9 @@ public class AuthenticattionFilter implements Filter {
         ADMIN_ROUTES = AppRouting.adminRoutes;
         USER_ROUTES = AppRouting.userRoutes;
         GUEST_ROUTES = AppRouting.guestRoutes;
+        LogUtils.init();
+        Momo.init();
+      
     }
 
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
@@ -122,18 +103,22 @@ public class AuthenticattionFilter implements Filter {
         HttpSession session = req.getSession(false);
 
         String resource = uri.substring(uri.lastIndexOf("/") + 1);
-       
+
         // check user is authenticated or not
         boolean isAuthenticated = session != null && session.getAttribute("user") != null;
         boolean isAdminResource = ADMIN_ROUTES.contains(resource);
         boolean isUserResource = USER_ROUTES.contains(resource);
         boolean isGuestResource = GUEST_ROUTES.contains(resource);
-        boolean isLoginRequest = resource.equals("login") || resource.equals("LoginServlet") || resource.equals("login.jsp");
-        boolean isRegisterRequest = resource.equals("register") || resource.equals("RegisterServlet") || resource.equals("register.jsp");
+        boolean isLoginRequest = resource.equals("login") || resource.equals("LoginServlet")
+                || resource.equals("login.jsp");
+        boolean isRegisterRequest = resource.equals("register") || resource.equals("RegisterServlet")
+                || resource.equals("register.jsp");
         boolean isHomePage = resource.isEmpty();
         boolean isStaticRequestFile = resource.endsWith(".css") || resource.endsWith(".js")
                 || resource.endsWith(".png") || resource.endsWith(".jpg") || resource.endsWith(".svg");
 
+//        boolean resourceFound = ADMIN_ROUTES.contains(resource)
+//                || USER_ROUTES.contains(resource) || GUEST_ROUTES.contains(resource) || resource.isEmpty() || isStaticRequestFile;
         if (isStaticRequestFile) {
             chain.doFilter(request, response);
         } else {
@@ -152,22 +137,22 @@ public class AuthenticattionFilter implements Filter {
                         } else if (roleName.equals(Role.USER)) {
                             request.getRequestDispatcher(USER_PAGE).forward(request, response);
                         }
-                    }                   
-                    else {
+                    } else {
                         if (roleName.equals(Role.ADMIN) && isAdminResource) {
                             chain.doFilter(request, response);
-                        } 
+                        }
                         if (roleName.equals(Role.USER) && (isUserResource || isGuestResource)) {
                             chain.doFilter(request, response);
                         }
-                        if((roleName.equals(Role.ADMIN) && !isAdminResource) ||
-                                roleName.equals(Role.USER) && !isUserResource){
+                        if ((roleName.equals(Role.ADMIN) && !isAdminResource)
+                                || roleName.equals(Role.USER) && !isUserResource) {
                             request.getRequestDispatcher(FOBIDDEN_PAGE).forward(request, response);
                         }
-                        
+
                     }
 
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     LOGGER.error("Error at when get usser role name", ex);
                 }
             } else {

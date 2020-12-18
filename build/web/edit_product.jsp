@@ -43,7 +43,7 @@
                     <small style="color: red">${requestScope.PRODUCT_ERROR.productNameErr}</small>
                 </div>
                 <div class="form-group my-2">
-                    <label for="">Price</label>
+                    <label for="">Price (VND)</label>
                     <input type="number" class="form-control" name="txtPrice" required="true" value="${requestScope.PRODUCT.price}">
                     <small style="color: red">${requestScope.PRODUCT_ERROR.priceErr}</small>
                 </div>

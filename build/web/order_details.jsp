@@ -53,7 +53,33 @@
 
                     <div class="payment-section">
                         <div class="fw-bold">Payment method</div>
-                        <div>${requestScope.METHOD.paymentMethodName}</div>
+                        <div><img class="mx-2" width="20" height="20" src="${requestScope.METHOD.paymentMethodName eq 'Momo' ? 'icons/momo.png' : 'icons/cod.png'}"/> ${requestScope.METHOD.paymentMethodName}</div>
+                    </div>
+                    <div class="payment-section">
+                        <div class="fw-bold">Order Status</div>
+                        <div>
+                            <form action="UpdateOrderStatusServlet" method="POST">
+                                <input type="hidden" name="orderID" value="${requestScope.ORDER.orderID}" />
+                                <select style="border: none; outline: none;" name="statusID">
+                                    <c:forEach items="${sessionScope.ORDER_STATUS_LIST}" var="status">
+                                        <option value="${status.statusID}" <c:if test="${status.statusID eq requestScope.ORDER.status.statusID}">selected</c:if>>
+                                            ${status.statusName}
+                                        </option>
+                                    </c:forEach>
+                                </select>
+                                <input type="submit" value="Update status" class="btn btn-primary"/>
+                            </form>
+
+                        </div>                     
+                    </div>                    
+                    <div class="payment-section">
+                        <div class="fw-bold">Money Paid</div>
+                        <c:if test="${requestScope.ORDER.moneyPaid eq true}">
+                            <div class="text-success fw-bold text-uppercase">Paid</div>
+                        </c:if>
+                        <c:if test="${requestScope.ORDER.moneyPaid eq false}">
+                            <div class="text-danger fw-bold text-uppercase">Not Paid</div>
+                        </c:if>
                     </div>
 
                     <div class="order-section">
@@ -80,29 +106,32 @@
                                                 <span class="">${details.product.productName}</span>
                                             </td>
                                             <td>
-                                                <span>$${details.price}</span>
+                                                <fmt:formatNumber value="${details.price}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
+                                                <span>${fmtPrice}</span>
                                             </td>
                                             <td>
                                                 <span>${details.quantity}</span>
                                             </td>
                                             <td>
-                                                <strong>$${details.quantity * details.price}</strong>
+                                                <fmt:formatNumber value="${details.quantity * details.price}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
+                                                <strong>${fmtPrice}</strong>
                                             </td>
                                         </tr>                              
                                     </c:forEach>    
                                 </c:if>        
-                                        <c:if test="${empty requestScope.ORDER_DETAILS}">
-                                            <tr>
-                                                <td colspan="5" class="text-danger" style="height: 50px;">Product is not available!</td>
-                                            </tr>
-                                        </c:if>
+                                <c:if test="${empty requestScope.ORDER_DETAILS}">
+                                    <tr>
+                                        <td colspan="5" class="text-danger" style="height: 50px;">Product is not available!</td>
+                                    </tr>
+                                </c:if>
 
                             </tbody>
                         </table>
 
                         <div class="total">
                             <div for="" class="text-uppercase text-light" style="background-color: gray;">total</div>
-                            <div for="" class="primary-bg-color text-light">$${requestScope.ORDER.totalPrice}</div>
+                            <fmt:formatNumber value="${requestScope.ORDER.totalPrice}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
+                            <div for="" class="primary-bg-color text-light">${fmtPrice}</div>
                         </div> 
 
                     </div>

@@ -1,3 +1,4 @@
 profile
 user_profile.jsp
 LogoutServlet
+UpdateProfileServlet

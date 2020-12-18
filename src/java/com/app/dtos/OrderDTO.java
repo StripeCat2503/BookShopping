@@ -17,6 +17,8 @@ public class OrderDTO {
     private double totalPrice;
     private Date orderDate;
     private String paymentMethodID;
+    private OrderStatusDTO status;
+    private boolean moneyPaid;
 
     public OrderDTO() {
     }
@@ -36,7 +38,42 @@ public class OrderDTO {
         this.paymentMethodID = paymentMethodID;
     }
 
+    public OrderDTO(String userID, double totalPrice, Date orderDate, String paymentMethodID, OrderStatusDTO status, boolean moneyPaid) {
+        this.userID = userID;
+        this.totalPrice = totalPrice;
+        this.orderDate = orderDate;
+        this.paymentMethodID = paymentMethodID;
+        this.status = status;
+        this.moneyPaid = moneyPaid;
+    }
+
     
+
+    public OrderDTO(int orderID, String userID, double totalPrice, Date orderDate, String paymentMethodID, OrderStatusDTO status, boolean moneyPaid) {
+        this.orderID = orderID;
+        this.userID = userID;
+        this.totalPrice = totalPrice;
+        this.orderDate = orderDate;
+        this.paymentMethodID = paymentMethodID;
+        this.status = status;
+        this.moneyPaid = moneyPaid;
+    }
+
+    public boolean isMoneyPaid() {
+        return moneyPaid;
+    }
+
+    public void setMoneyPaid(boolean moneyPaid) {
+        this.moneyPaid = moneyPaid;
+    }
+
+    public OrderStatusDTO getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatusDTO status) {
+        this.status = status;
+    }
 
     public int getOrderID() {
         return orderID;

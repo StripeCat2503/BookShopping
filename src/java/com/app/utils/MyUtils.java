@@ -131,4 +131,18 @@ public class MyUtils {
 
         return sb.toString();
     }
+    
+    public static String toNonAccentString(String src){
+        src = src.replaceAll("à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ", "a");
+        src = src.replaceAll("è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ", "e");
+        src = src.replaceAll("ì|í|ị|ỉ|ĩ", "i");
+        src = src.replaceAll("ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ", "o");
+        src = src.replaceAll("ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ", "u");
+        src = src.replaceAll("ỳ|ý|ỵ|ỷ|ỹ", "y");
+        src = src.replaceAll("đ", "d");
+        src = src.replaceAll("\u0300|\u0301|\u0303|\u0309|\u0323", ""); // Huyền sắc hỏi ngã nặng 
+        src = src.replaceAll("\u02C6|\u0306|\u031B", "");
+        
+        return src;
+    }
 }

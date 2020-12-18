@@ -79,5 +79,17 @@ public class CartDTO {
         return numberOfItems;
     }
 
+    public void setItems(Map<Integer, ProductDTO> items) {
+        this.items = items;
+    }
+
+    public void setTotal(double total) {
+        this.total = total;
+    }
+
+    public void setNumberOfItems(int numberOfItems) {
+        this.numberOfItems = numberOfItems;
+    }
+
     
 }

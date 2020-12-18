@@ -3,6 +3,7 @@
 <%@page import="com.app.dtos.ProductDTO"%>
 <%@page import="com.app.daos.ProductDAO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>    
@@ -42,7 +43,7 @@
                     <tr>
                         <th scope="col">No.</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Price</th>
+                        <th scope="col">Price (VND)</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Category</th>
                         <th scope="col">Status</th>
@@ -54,7 +55,8 @@
                         <tr>                       
                             <td>${counter.count}</td>
                             <td>${product.productName}</td>
-                            <td>${product.price}</td>
+                            <fmt:formatNumber value="${product.price}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol=""/>
+                            <td>${fmtPrice}</td>
                             <td>${product.quantity}</td>
                             <td>${product.category.categoryName}</td>
                             <td>

@@ -3,18 +3,18 @@
     <filter>
         <filter-name>AuthenticattionFilter</filter-name>
         <filter-class>com.app.filters.AuthenticattionFilter</filter-class>
-    </filter>   
+    </filter>
     <filter>
         <filter-name>DispatcherFilter</filter-name>
         <filter-class>com.app.filters.DispatcherFilter</filter-class>
     </filter>
     <filter-mapping>
         <filter-name>AuthenticattionFilter</filter-name>
-        <url-pattern>/*</url-pattern>     
-    </filter-mapping>  
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <filter-mapping>
         <filter-name>DispatcherFilter</filter-name>
-        <url-pattern>/*</url-pattern>      
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -84,6 +84,18 @@
         <servlet-name>AdminSearchServlet</servlet-name>
         <servlet-class>com.app.servlets.AdminSearchServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>VerifyMomoTransactionServlet</servlet-name>
+        <servlet-class>com.app.servlets.VerifyMomoTransactionServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateOrderStatusServlet</servlet-name>
+        <servlet-class>com.app.servlets.UpdateOrderStatusServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UpdateProfileServlet</servlet-name>
+        <servlet-class>com.app.servlets.UpdateProfileServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -152,11 +164,31 @@
         <servlet-name>AdminSearchServlet</servlet-name>
         <url-pattern>/AdminSearchServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VerifyMomoTransactionServlet</servlet-name>
+        <url-pattern>/VerifyMomoTransactionServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateOrderStatusServlet</servlet-name>
+        <url-pattern>/UpdateOrderStatusServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UpdateProfileServlet</servlet-name>
+        <url-pattern>/UpdateProfileServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
+    <error-page>
+        <error-code>404</error-code>
+        <location>/not_found.html</location>
+    </error-page>
+    <error-page>
+        <error-code>403</error-code>
+        <location>/forbidden.html</location>
+    </error-page>
     <resource-ref>
         <res-ref-name>BookShoppingDB</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>

@@ -7,6 +7,7 @@
 
 .product-card .info {
     padding: 5px 10px;
+    word-wrap: break-word;
 }
 
 .product-card .status{
@@ -82,9 +83,18 @@
 .btn-search{
     width: 20%;
     border: none;
+    border-radius: 5px;
     color: white;
     background-color: #5d99c2;
     /*padding: 10px 30px;*/
     height: 50px;
     display: block-inline;
+}
+
+.btn-search:hover{
+    background-color: #497999;
+}
+
+.nav-btn-signin:hover{
+    background-color: #568f3d;
 }

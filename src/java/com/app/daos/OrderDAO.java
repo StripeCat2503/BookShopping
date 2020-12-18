@@ -6,6 +6,7 @@
 package com.app.daos;
 
 import com.app.dtos.OrderDTO;
+import com.app.dtos.OrderStatusDTO;
 import com.app.utils.DBUtil;
 import java.sql.Connection;
 import java.sql.Date;
@@ -22,14 +23,24 @@ import java.util.List;
  */
 public class OrderDAO {
 
-    private final String SQL_INSERT_ORDER = "INSERT INTO tblOrders(userID, totalPrice, orderDate, paymentMethodID) VALUES(?, ?, ?, ?)";
+    private final String SQL_INSERT_ORDER = "INSERT INTO tblOrders(userID, totalPrice, orderDate, paymentMethodID, statusID, moneyPaid) "
+            + "VALUES(?, ?, ?, ?, ?, ?)";
     
-    private final String SQL_GET_ALL_ORDERS = "SELECT orderID, userID, totalPrice, orderDate, paymentMethodID "
-            + "FROM tblOrders";
-    
-    private final String SQL_GET_ORDER_BY_ID = "SELECT orderID, userID, totalPrice, orderDate, paymentMethodID "
-            + "FROM tblOrders WHERE orderID = ?";
-          
+    private final String SQL_UPDATE_STATUS = "UPDATE tblOrders "
+            + "SET statusID = ? "
+            + "WHERE orderID = ?";
+
+    private final String SQL_GET_ALL_ORDERS = "SELECT o.orderID, o.userID, o.totalPrice, o.orderDate, "
+            + "o.paymentMethodID, s.statusID, s.statusName, o.moneyPaid "
+            + "FROM tblOrders AS o JOIN tblOrderStatus AS s "
+            + "ON o.statusID = s.statusID";
+
+    private final String SQL_GET_ORDER_BY_ID = "SELECT o.orderID, o.userID, o.totalPrice, o.orderDate, "
+            + "o.paymentMethodID, s.statusID, s.statusName, o.moneyPaid "
+            + "FROM tblOrders AS o JOIN tblOrderStatus AS s "
+            + "ON o.statusID = s.statusID "
+            + "WHERE orderID = ?";
+
     public int insertOrder(OrderDTO order) throws SQLException {
         Connection con = null;
         PreparedStatement stm = null;
@@ -43,14 +54,16 @@ public class OrderDAO {
 
                 stm.setString(1, order.getUserID());
                 stm.setDouble(2, order.getTotalPrice());
-                stm.setDate(3, order.getOrderDate());              
-                stm.setString(4, order.getPaymentMethodID());              
+                stm.setDate(3, order.getOrderDate());
+                stm.setString(4, order.getPaymentMethodID());
+                stm.setString(5, order.getStatus().getStatusID());
+                stm.setBoolean(6, order.isMoneyPaid());
 
                 int rows = stm.executeUpdate();
 
                 if (rows > 0) {
                     ResultSet generatedKeys = stm.getGeneratedKeys();
-                    if(generatedKeys.next()){
+                    if (generatedKeys.next()) {
                         insertedOrderID = generatedKeys.getInt(1);
                     }
                 }
@@ -69,6 +82,40 @@ public class OrderDAO {
         return insertedOrderID;
     }
     
+    public boolean updateOrderStatus(int orderID, String statusID) throws SQLException {
+        Connection con = null;
+        PreparedStatement stm = null;
+        boolean success = false;
+
+        try {
+            con = DBUtil.getConnection();
+            if (con != null) {
+                // return order id if inserting new order executed successfully
+                stm = con.prepareStatement(SQL_UPDATE_STATUS);
+
+                stm.setString(1, statusID);
+                stm.setInt(2, orderID);
+               
+                int rows = stm.executeUpdate();
+
+                if (rows > 0) {
+                    success = true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+
+        return success;
+    }
+
     public List<OrderDTO> getAllOrders() throws SQLException {
         Connection con = null;
         PreparedStatement stm = null;
@@ -89,9 +136,12 @@ public class OrderDAO {
                     String userID = rs.getString("userID");
                     double totalPrice = rs.getDouble("totalPrice");
                     Date orderDate = rs.getDate("orderDate");
-                    String paymentMethodID = rs.getString("paymentMethodID");            
+                    String paymentMethodID = rs.getString("paymentMethodID");
+                    String statusID = rs.getString("statusID");
+                    String statusName = rs.getString("statusName");
+                    boolean moneyPaid = rs.getBoolean("moneyPaid");
 
-                    OrderDTO order = new OrderDTO(orderID, userID, totalPrice, orderDate, paymentMethodID);
+                    OrderDTO order = new OrderDTO(orderID, userID, totalPrice, orderDate, paymentMethodID, new OrderStatusDTO(statusID, statusName), moneyPaid);
 
                     orderList.add(order);
                 }
@@ -112,7 +162,7 @@ public class OrderDAO {
 
         return orderList;
     }
-    
+
     public OrderDTO getOrderByID(int orderID) throws SQLException {
         Connection con = null;
         PreparedStatement stm = null;
@@ -126,14 +176,17 @@ public class OrderDAO {
                 stm.setInt(1, orderID);
                 rs = stm.executeQuery();
 
-                if (rs.next()) {                    
-                    
+                if (rs.next()) {
+
                     String userID = rs.getString("userID");
                     double totalPrice = rs.getDouble("totalPrice");
                     Date orderDate = rs.getDate("orderDate");
-                    String paymentMethodID = rs.getString("paymentMethodID");            
+                    String paymentMethodID = rs.getString("paymentMethodID");
+                    String statusID = rs.getString("statusID");
+                    String statusName = rs.getString("statusName");
+                    boolean moneyPaid = rs.getBoolean("moneyPaid");
 
-                    order = new OrderDTO(orderID, userID, totalPrice, orderDate, paymentMethodID);
+                    order = new OrderDTO(orderID, userID, totalPrice, orderDate, paymentMethodID, new OrderStatusDTO(statusID, statusName), moneyPaid);
 
                 }
             }

@@ -27,6 +27,10 @@ public class UserDAO {
             + "address, email, phoneNumber, roleID, createdDate) "
             + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     
+    private final String SQL_UPDATE_USER = "UPDATE tblUsers "
+            + "SET fullName = ?, address = ?, email = ?, phoneNumber = ? "
+            + "WHERE userID = ?";
+    
     private final String SQL_GET_USER = "SELECT u.userID, u.fullName, u.email, u.address, u.phoneNumber, u.roleID, r.roleName "
             + "FROM tblUsers AS u JOIN tblRoles AS r ON u.roleID = r.roleID "
             + "WHERE u.userID = ? AND u.password = ?";
@@ -77,6 +81,42 @@ public class UserDAO {
         }
 
         return insertedUserID;
+    }
+    
+    public boolean updateUser(UserDTO user) throws SQLException {
+        Connection con = null;
+        PreparedStatement stm = null;
+        boolean success = false;
+
+        try {
+            con = DBUtil.getConnection();
+            if (con != null) {
+                stm = con.prepareStatement(SQL_UPDATE_USER);
+                stm.setString(1, user.getFullName());
+                stm.setString(2, user.getAddress());
+                stm.setString(3, user.getEmail());
+                stm.setString(4, user.getPhoneNumber());
+                stm.setString(5, user.getUserID());
+               
+                int rows = stm.executeUpdate();
+                
+                if(rows > 0){
+                    success = true;
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error while inserting user!", e);
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+
+        return success;
     }
     
     public UserDTO authenticateUser(String userID, String password) throws SQLException {

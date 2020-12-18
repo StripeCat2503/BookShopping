@@ -30,16 +30,18 @@
 
         <div class="content">
             <h3 class="text-uppercase">Order Management</h3>
-            <c:if test="${not empty requestScope.ORDERS}">
-                <table border="1">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Total</th>
-                            <th>Order Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Total (VND)</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:if test="${not empty requestScope.ORDERS}">
                         <c:forEach items="${requestScope.ORDERS}" var="order">
                             <tr>
                                 <td>
@@ -48,16 +50,27 @@
                                     </c:url>
                                     <a href="${orderDetailsUrl}">#${order.orderID}</a>
                                 </td>
-                                <td class="fw-bold">$${order.totalPrice}</td>
+                                <fmt:formatNumber value="${order.totalPrice}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol=""/>
+                                <td class="fw-bold">${fmtPrice}</td>
                                 <td>
                                     <fmt:formatDate var="orderDate" pattern="dd/MM/yyyy" value="${order.orderDate}"/>
                                     ${orderDate}
                                 </td>
+                                <td>                                   
+                                    ${order.status.statusName}
+                                </td>
                             </tr>
                         </c:forEach>
-                    </tbody>
-                </table>
-            </c:if>
+                    </c:if>
+                    <c:if test="${empty requestScope.ORDERS}">
+                        <tr>
+                            <td colspan="3" class="text-center">There's no order</td>
+                        </tr>
+                    </c:if>
+                </tbody>
+            </table>
+
+
 
         </div>
 

@@ -16,4 +16,5 @@ public class GmailConstant {
     public static final String SMTP_PORT = "465";
     public static final String SMTP_SSL = "true";
     public static final String SMTP_AUTH = "true";
+    public static final String SUBJECT = "BookShopping - Order Confirmation";
 }

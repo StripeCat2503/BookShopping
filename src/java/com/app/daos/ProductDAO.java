@@ -9,6 +9,7 @@ import com.app.constants.MyConstants;
 import com.app.dtos.ProductCategoryDTO;
 import com.app.dtos.ProductDTO;
 import com.app.utils.DBUtil;
+import com.app.utils.MyUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,18 +34,18 @@ public class ProductDAO {
             + "FROM tblProducts WHERE categoryID = ?";
 
     private final String SQL_SEARCH_PRODUCT_BY_NAME = "SELECT productID, productName, price, quantity, status, image, description, categoryID "
-            + "FROM tblProducts WHERE productName LIKE ?";
-       
+            + "FROM tblProducts WHERE nonAccentProductName LIKE ?";
+
     private final String SQL_GET_PRODUCT_BY_NAME = "SELECT productID "
             + "FROM tblProducts WHERE productName = ?";
 
-    private final String SQL_INSERT_PRODUCT = "INSERT INTO tblProducts(productName, price, quantity, image, description, status, categoryID) "
-            + "VALUES(?, ?, ?, ?, ?, ?, ?)";
+    private final String SQL_INSERT_PRODUCT = "INSERT INTO tblProducts(productName, price, quantity, image, description, status, categoryID, nonAccentProductName) "
+            + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 
     private final String SQL_DELETE_PRODUCT = "DELETE FROM tblProducts WHERE productID = ?";
-    
+
     private final String SQL_UPDATE_PRODUCT = "UPDATE tblProducts SET productName = ?, price = ?, quantity = ?, image = ?, description = ?, "
-            + "status = ?, categoryID = ? "
+            + "status = ?, categoryID = ?, nonAccentProductName = ?"
             + "WHERE productID = ?";
 
     public boolean insertProduct(ProductDTO product) throws SQLException {
@@ -55,6 +56,7 @@ public class ProductDAO {
         try {
             con = DBUtil.getConnection();
             if (con != null) {
+             
                 stm = con.prepareStatement(SQL_INSERT_PRODUCT);
 
                 stm.setString(1, product.getProductName());
@@ -64,6 +66,9 @@ public class ProductDAO {
                 stm.setString(5, product.getDescription());
                 stm.setBoolean(6, product.isStatus());
                 stm.setInt(7, product.getCategory().getCategoryID());
+                
+                String nonAccentProductName = MyUtils.toNonAccentString(product.getProductName());
+                stm.setString(8, nonAccentProductName);
 
                 int rows = stm.executeUpdate();
 
@@ -102,7 +107,11 @@ public class ProductDAO {
                 stm.setString(5, product.getDescription());
                 stm.setBoolean(6, product.isStatus());
                 stm.setInt(7, product.getCategory().getCategoryID());
-                stm.setInt(8, product.getProductID());
+                
+                String nonAccentProductName = MyUtils.toNonAccentString(product.getProductName());
+                stm.setString(8, nonAccentProductName);
+                
+                stm.setInt(9, product.getProductID());
 
                 int rows = stm.executeUpdate();
 
@@ -180,6 +189,7 @@ public class ProductDAO {
                     String image = rs.getString("image");
                     image = image.isEmpty() ? MyConstants.DEFAULT_PRODUCT_IMAGE_URL : image.replace("\\", "/");
                     String des = rs.getString("description");
+                    des = des.length() > 50 ? des.substring(0, 20) + "..." : des;
                     int categoryID = rs.getInt("categoryID");
                     String categoryName = rs.getString("categoryName");
 
@@ -301,7 +311,9 @@ public class ProductDAO {
         PreparedStatement stm = null;
         ResultSet rs = null;
         List<ProductDTO> searchResults = null;
-
+        
+        searchValue = MyUtils.toNonAccentString(searchValue);
+        
         try {
             con = DBUtil.getConnection();
             if (con != null) {
@@ -321,8 +333,9 @@ public class ProductDAO {
                     String image = rs.getString("image");
                     image = image.isEmpty() ? MyConstants.DEFAULT_PRODUCT_IMAGE_URL : image.replace("\\", "/");
                     String des = rs.getString("description");
+                    des = des.length() > 20 ? des.substring(0, 20) : des;
                     int categoryID = rs.getInt("categoryID");
-                  
+
                     ProductCategoryDTO category = new ProductCategoryDTO(categoryID, null);
 
                     ProductDTO product = new ProductDTO(productID, productName, price, quantity, isActive, image, des, category);
@@ -344,7 +357,7 @@ public class ProductDAO {
 
         return searchResults;
     }
-    
+
     public boolean isExistedProduct(String productName) throws SQLException {
         Connection con = null;
         PreparedStatement stm = null;

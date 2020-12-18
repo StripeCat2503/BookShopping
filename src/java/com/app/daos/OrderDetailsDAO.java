@@ -86,7 +86,7 @@ public class OrderDetailsDAO {
                     OrderDetailsDTO detail = new OrderDetailsDTO();
                     ProductDTO product = new ProductDTO();
                     product.setProductName(productName);
-                    product.setImage(image);
+                    product.setImage(image.replace("\\", "/"));
                     product.setPrice(price);
                  
                     detail.setProduct(product);

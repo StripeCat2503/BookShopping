@@ -42,7 +42,7 @@
                     <tr>
                         <th scope="col">No.</th>
                         <th scope="col">Name</th>
-                        <th scope="col">Price</th>
+                        <th scope="col">Price (VND)</th>
                         <th scope="col">Quantity</th>
                         <th scope="col">Category</th>
                         <th scope="col">Status</th>
@@ -54,7 +54,8 @@
                         <tr>                       
                             <td>${counter.count}</td>
                             <td>${product.productName}</td>
-                            <td>${product.price}</td>
+                            <fmt:formatNumber value="${product.price}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol=""/>
+                            <td>${fmtPrice}</td>
                             <td>${product.quantity}</td>
                             <td>${product.category.categoryName}</td>
                             <td>

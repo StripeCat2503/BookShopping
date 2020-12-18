@@ -7,6 +7,7 @@
 <%@page import="com.app.daos.UserDAO"%>
 <%@page import="com.app.dtos.UserDTO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page import="com.app.dtos.ProductDTO"%>
 <%@page import="java.util.List"%>
 <%@page import="com.app.daos.ProductDAO"%>
@@ -53,7 +54,8 @@
                                 <div class="info text-center">
                                     <p class="name text-uppercase py-2 fs-6 fw-bold">${product.productName}</p>                           
                                     <p>${product.description eq '' ? 'No description...' : product.description}</p>
-                                    <p class="price fs-1 fw-bold">$${product.price}</p>                           
+                                    <fmt:formatNumber value="${product.price}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
+                                    <p class="price fs-1 fw-bold">${fmtPrice}</p>                           
                                 </div>
                                 <c:if test="${product.quantity <= 0}">
                                     <div class='status text-danger text-uppercase fw-bold'>

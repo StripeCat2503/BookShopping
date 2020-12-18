@@ -6,11 +6,45 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Not Found!</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="css/style.css"/>
+        <style>
+            .forbidden{
+                display: flex;
+                justify-content: space-around;
+
+            }
+
+            .forbidden div{
+                flex: 1;            
+            }
+
+            .forbidden .img-section{
+                width: 100%;
+            }
+
+            img{
+                width: 200px;
+                height: 200px;
+            }
+        </style>
     </head>
     <body>
-        <div>Error - 404 - Not Found</div>
+        <div class="m-5 border forbidden">
+            <div class="bg-dark text-light text-center">
+                <div class="mt-5">
+                    <h1>Resource not found!</h1>
+                    <div>Sorry, this resource might not available!</div>
+                </div>
+            </div>
+            <div class="p-5">
+                <div class="img-section text-center">
+                    <img src="images/404-error.png"/>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

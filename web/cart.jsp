@@ -2,6 +2,7 @@
 <%@page import="com.app.dtos.ProductDTO"%>
 <%@page import="com.app.dtos.CartDTO"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -49,7 +50,8 @@
                                             </div>
                                         </td>
                                         <td>${item.value.productName}</td>
-                                        <td>$${item.value.price}</td>
+                                        <fmt:formatNumber value="${item.value.price}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
+                                        <td>${fmtPrice}</td>
                                         <td>
                                             <div class="input-group mx-auto" style="width: 120px;">
                                                 <input type="hidden" value="${item.key}" class="product-id" name="productID"/>
@@ -59,7 +61,8 @@
                                                 <button id="btnDecrease-${item.key}" class="input-group-btn quantity-btn">-</button>
                                             </div>
                                         </td>
-                                        <td>$${item.value.price * item.value.quantity}</td>
+                                        <fmt:formatNumber value="${item.value.price * item.value.quantity}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
+                                        <td>${fmtPrice}</td>
                                     </tr>
                                 </c:forEach>
 
@@ -71,7 +74,8 @@
 
                 <section class="cart-total p-2">
                     <h4 class="text-uppercase text-center">Cart Total</h4>
-                    <div class="text-center fw-bold fs-1">$${sessionScope.CART.total}</div>
+                    <fmt:formatNumber value="${sessionScope.CART.total}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
+                    <div class="text-center fw-bold fs-1">${fmtPrice}</div>
                     <div class="text-center">
                         <a href="checkout" class="d-block btn-checkout">CHECKOUT</a>
                     </div>

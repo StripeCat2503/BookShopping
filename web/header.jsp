@@ -26,8 +26,8 @@
                 <span class="badge bg-danger rounded-pill">${sessionScope.CART.numberOfItems}</span>
             </a>
             <c:if test="${empty sessionScope.user}">
-                <a href="login" class="btn primary-bg-color text-light not-rounded mx-2">Sign In</a>
-                <a href="register" class="btn primary-border-color primary-text-color not-rounded mx-2">Sign Up</a>
+                <a href="login" class="btn primary-bg-color text-light mx-2 nav-btn-signin">Sign In</a>
+                <a href="register" class="btn primary-border-color primary-text-color mx-2 nav-btn-signup">Sign Up</a>
 
             </c:if>
             <c:if test="${not empty sessionScope.user}">

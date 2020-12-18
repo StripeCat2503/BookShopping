@@ -17,7 +17,6 @@ import org.apache.log4j.Logger;
  * @author DuyNK
  */
 public class RoleDAO {
-    private static final Logger LOGGER = Logger.getLogger(RoleDAO.class);
     
     private final String SQL_GET_ROLE_ID_BY_NAME = "SELECT roleID FROM tblRoles "
             + "WHERE roleName = ?";
@@ -43,7 +42,7 @@ public class RoleDAO {
             }
             
         } catch (Exception e) {
-            LOGGER.error("Error when get role id!", e);
+            e.printStackTrace();
         }
         finally{
             if(rs != null) rs.close();
@@ -73,7 +72,7 @@ public class RoleDAO {
             }
             
         } catch (Exception e) {
-            LOGGER.error("Error when get role id!", e);
+            e.printStackTrace();
         }
         finally{
             if(rs != null) rs.close();

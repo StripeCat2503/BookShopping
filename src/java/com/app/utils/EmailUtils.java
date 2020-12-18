@@ -54,7 +54,7 @@ public class EmailUtils {
             message.setSubject(subject);
 
             // Now set the actual message
-            message.setContent(content, "text/html");
+            message.setContent(content, "text/html; charset=UTF-8");
 
             System.out.println("sending...");
             // Send message

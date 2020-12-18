@@ -45,6 +45,8 @@ public class AddProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+                
         String productName = request.getParameter("txtProductName").trim();
         String priceStr = request.getParameter("txtPrice").trim();
         String quantityStr = request.getParameter("txtQuantity").trim();

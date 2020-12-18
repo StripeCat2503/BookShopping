@@ -19,3 +19,5 @@ LogoutServlet
 manage_product_search.jsp
 AdminSearchServlet
 adminSearch
+updateOrderStatus
+UpdateOrderStatusServlet
