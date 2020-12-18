@@ -5,17 +5,20 @@
  */
 package com.app.filters;
 
+import com.app.constants.Role;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
+import com.app.payments.momo.Momo;
+import com.app.routes.AppRouting;
+import com.mservice.shared.utils.LogUtils;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.SQLException;
+import java.util.List;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -30,6 +33,17 @@ import org.apache.log4j.Logger;
  */
 public class AuthenticattionFilter implements Filter {
 
+    private final List<String> ADMIN_ROUTES;
+
+    private final List<String> USER_ROUTES;
+
+    private final List<String> GUEST_ROUTES;
+
+    private final String LOGIN_PAGE = "login.jsp";
+    private final String ADMIN_PAGE = "admin.jsp";
+    private final String USER_PAGE = "index.jsp";
+    private final String FOBIDDEN_PAGE = "forbidden.html";
+
     private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
@@ -39,12 +53,17 @@ public class AuthenticattionFilter implements Filter {
 
     private static final Logger LOGGER = Logger.getLogger(AuthenticattionFilter.class);
 
-    private final String LOGIN_PAGE = "login.jsp";
-    private final String WELCOME_PAGE = "index.jsp";
-    private final String ADMIN_PAGE = "admin.jsp";
     private final String NOT_FOUND = "not_found.html";
 
     public AuthenticattionFilter() {
+        // init all routes for the app
+        AppRouting.initRoutes();
+        ADMIN_ROUTES = AppRouting.adminRoutes;
+        USER_ROUTES = AppRouting.userRoutes;
+        GUEST_ROUTES = AppRouting.guestRoutes;
+        LogUtils.init();
+        Momo.init();
+      
     }
 
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
@@ -80,49 +99,75 @@ public class AuthenticattionFilter implements Filter {
         HttpServletResponse res = (HttpServletResponse) response;
 
         String uri = req.getRequestURI();
+
         HttpSession session = req.getSession(false);
-        System.out.println("uri:" + uri);
+
+        String resource = uri.substring(uri.lastIndexOf("/") + 1);
 
         // check user is authenticated or not
         boolean isAuthenticated = session != null && session.getAttribute("user") != null;
-        boolean isLoginRequest = uri.endsWith("LoginServlet");
-        boolean isLoginPage = uri.endsWith("login.jsp");
-        boolean isHomePage = uri.endsWith("/");
-        boolean isRegisterPage = uri.endsWith("register.jsp");
-        boolean isRegisterRequest = uri.endsWith("RegisterServlet");
+        boolean isAdminResource = ADMIN_ROUTES.contains(resource);
+        boolean isUserResource = USER_ROUTES.contains(resource);
+        boolean isGuestResource = GUEST_ROUTES.contains(resource);
+        boolean isLoginRequest = resource.equals("login") || resource.equals("LoginServlet")
+                || resource.equals("login.jsp");
+        boolean isRegisterRequest = resource.equals("register") || resource.equals("RegisterServlet")
+                || resource.equals("register.jsp");
+        boolean isHomePage = resource.isEmpty();
+        boolean isStaticRequestFile = resource.endsWith(".css") || resource.endsWith(".js")
+                || resource.endsWith(".png") || resource.endsWith(".jpg") || resource.endsWith(".svg");
 
-        if (isAuthenticated) {
-            String url = NOT_FOUND;
-            try {
-                // check role of user
-                UserDTO loggedInUser = (UserDTO) session.getAttribute("user");
-                UserDAO dao = new UserDAO();
-                String roleID = loggedInUser.getRoleID();
-                String roleName = dao.getUserRoleName(roleID);
+//        boolean resourceFound = ADMIN_ROUTES.contains(resource)
+//                || USER_ROUTES.contains(resource) || GUEST_ROUTES.contains(resource) || resource.isEmpty() || isStaticRequestFile;
+        if (isStaticRequestFile) {
+            chain.doFilter(request, response);
+        } else {
+            if (isAuthenticated) {
+                try {
+                    // check role of user
+                    UserDTO loggedInUser = (UserDTO) session.getAttribute("user");
 
-                if (isLoginRequest || isLoginPage || isHomePage
-                        || isRegisterPage || isRegisterRequest) {
-                    if (roleName.equals("Admin")) {
-                        url = ADMIN_PAGE;
-                    } else if (roleName.equals("User")) {
-                        url = WELCOME_PAGE;
+                    UserDAO dao = new UserDAO();
+                    String roleID = loggedInUser.getRole().getRoleID();
+                    String roleName = dao.getUserRoleName(roleID);
+
+                    if (isHomePage || isLoginRequest || isRegisterRequest) {
+                        if (roleName.equals(Role.ADMIN)) {
+                            request.getRequestDispatcher(ADMIN_PAGE).forward(request, response);
+                        } else if (roleName.equals(Role.USER)) {
+                            request.getRequestDispatcher(USER_PAGE).forward(request, response);
+                        }
+                    } else {
+                        if (roleName.equals(Role.ADMIN) && isAdminResource) {
+                            chain.doFilter(request, response);
+                        }
+                        if (roleName.equals(Role.USER) && (isUserResource || isGuestResource)) {
+                            chain.doFilter(request, response);
+                        }
+                        if ((roleName.equals(Role.ADMIN) && !isAdminResource)
+                                || roleName.equals(Role.USER) && !isUserResource) {
+                            request.getRequestDispatcher(FOBIDDEN_PAGE).forward(request, response);
+                        }
+
                     }
 
-                    RequestDispatcher rd = req.getRequestDispatcher(url);
-                    rd.forward(request, response);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    LOGGER.error("Error at when get usser role name", ex);
                 }
+            } else {
+                if (isAdminResource || isUserResource) {
+                    if (isHomePage) {
+                        request.getRequestDispatcher(USER_PAGE).forward(request, response);
+                    } else {
+                        res.sendRedirect(LOGIN_PAGE);
+                    }
 
-            } catch (Exception ex) {
-                LOGGER.error("Error at when get usser role name", ex);
-            } 
+                } else {
+                    chain.doFilter(request, response);
+                }
+            }
         }
-
-        if (!isAuthenticated && isLoginPage) {
-            RequestDispatcher rd = req.getRequestDispatcher(LOGIN_PAGE);
-            rd.forward(request, response);
-        }
-
-        chain.doFilter(request, response);
 
     }
 

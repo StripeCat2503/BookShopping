@@ -49,12 +49,34 @@ form p{
 
 form input{
     width: 100%;
-    height: 40px;
+    height: 50px;
     outline: none;
     border: 1px solid #535c68;
+    padding-left: 10px;
+    border-radius: 5px;
 }
 
 form input[type='submit']{
     margin-top: 20px;
     height: 48px;
+}
+
+.btn-google{     
+    padding: 15px 0;
+    text-align: center;
+    transition: 0.2s;  
+}
+
+.btn-google:hover{
+    color: white !important;
+    
+}
+
+.btn-google img{
+    width: 30px;
+    height: 30px;
+}
+
+.btn-signin:hover{
+    background-color: #568f3d;
 }

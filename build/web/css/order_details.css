@@ -1,0 +1,67 @@
+
+.order-details-section .info{
+    display: flex;
+    justify-content: space-between;
+    margin: 0 50px;
+}
+
+.order-details-section .info label{
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.order-details-section .customer-section{
+    border: 1px solid #dbdbd9;
+    padding: 10px 0;
+
+}
+
+
+.order-details-section .order-section{
+    margin: 10px 0;
+}
+
+.order-details-section .order-section .total{
+    display: flex;
+    justify-content: space-around;
+    margin: 10px 0;
+    align-items: center;
+    font-size: 20px;
+}
+
+.order-details-section .order-section .total div{
+    flex: 1;
+    text-align: center;  
+    padding: 20px 0;       
+}
+
+.order-details-section .order-section .product-image{
+    width: 60px;
+    height: 60px;
+    background-position: center;
+    background-size: cover;
+    margin: 5px auto;           
+}
+
+table{
+    width: 100%;           
+}
+
+table, th, td{
+    border: 1px solid #dbdbd9;
+    text-align: center;
+}
+
+th{
+    height: 50px;
+    text-transform: uppercase;
+}
+
+.order-details-section .payment-section{
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 30px;
+    margin: 10px 0;
+    border: 1px solid #dbdbd9;
+}

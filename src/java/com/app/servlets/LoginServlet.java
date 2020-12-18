@@ -5,12 +5,13 @@
  */
 package com.app.servlets;
 
-import com.app.daos.RoleDAO;
+import com.app.constants.Role;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
+import com.app.routes.AppRouting;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.util.Map;
 import javax.servlet.RequestDispatcher;
 
 import javax.servlet.ServletException;
@@ -28,10 +29,10 @@ public class LoginServlet extends HttpServlet {
 
     private static final Logger LOGGER = Logger.getLogger(LoginServlet.class);
 
-    private final String LOGIN_PAGE = "login.jsp";
-    private final String WELCOME_PAGE = "index.jsp";
-    private final String ADMIN_PAGE = "admin.jsp";
     private final String NOT_FOUND = "not_found.html";
+    private final String ADMIN_PAGE = "admin.jsp";
+    private final String USER_PAGE = "index.jsp";
+    private final String LOGIN_PAGE = "login.jsp";
 
     private final String LOGIN_ERR_MSG = "Invalid username or password!";
 
@@ -46,6 +47,42 @@ public class LoginServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String userID = request.getParameter("txtUserID");
+        String password = request.getParameter("txtPassword");
+
+        String url = NOT_FOUND;
+
+        try {
+            if (!userID.isEmpty() && !password.isEmpty()) {
+                UserDAO dao = new UserDAO();
+
+                UserDTO loggedInUser = dao.authenticateUser(userID, password);
+                if (loggedInUser != null) {
+                    HttpSession session = request.getSession();
+                    session.setAttribute("user", loggedInUser);
+                    String roleID = loggedInUser.getRole().getRoleID();
+                    String roleName = dao.getUserRoleName(roleID);
+                    if (roleName.equals(Role.ADMIN)) {
+                        url = ADMIN_PAGE;
+                    } else if (roleName.equals(Role.USER)) {
+                        url = USER_PAGE;
+                    }
+
+                } else {
+                    url = LOGIN_PAGE;
+                    request.setAttribute("loginError", LOGIN_ERR_MSG);
+                }
+
+            }
+            else{
+                url = LOGIN_PAGE;
+            }
+        } catch (SQLException ex) {
+            LOGGER.error("Error while login user", ex);
+        } finally {
+            RequestDispatcher rd = request.getRequestDispatcher(url);
+            rd.forward(request, response);
+        }
 
     }
 
@@ -63,7 +100,6 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         processRequest(request, response);
 
-        response.sendRedirect(LOGIN_PAGE);
     }
 
     /**
@@ -78,39 +114,6 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-
-        String userID = request.getParameter("txtUserID");
-        String password = request.getParameter("txtPassword");
-        String url = LOGIN_PAGE;
-
-        if (!userID.isEmpty() && !password.isEmpty()) {
-            UserDAO dao = new UserDAO();
-            try {
-                UserDTO loggedInUser = dao.authenticateUser(userID, password);
-                if (loggedInUser != null) {
-                    HttpSession session = request.getSession();
-                    session.setAttribute("user", loggedInUser);
-                    String roleID = loggedInUser.getRoleID();
-                    String roleName = dao.getUserRoleName(roleID);
-                    if (roleName.equals("Admin")) {
-                        url = ADMIN_PAGE;
-                    } else if (roleName.equals("User")) {
-                        url = WELCOME_PAGE;
-                    } else {
-                        url = NOT_FOUND;
-                    }
-
-                } else {
-                    request.setAttribute("loginError", LOGIN_ERR_MSG);
-                }
-            } catch (SQLException ex) {
-                LOGGER.error("Error while login user", ex);
-            } finally {
-                RequestDispatcher rd = request.getRequestDispatcher(url);
-                rd.forward(request, response);
-            }
-
-        }
 
     }
 

@@ -5,6 +5,7 @@
  */
 package com.app.daos;
 
+import com.app.dtos.RoleDTO;
 import com.app.dtos.UserDTO;
 import com.app.utils.DBUtil;
 import java.sql.Connection;
@@ -12,7 +13,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import org.apache.log4j.Logger;
 
 /**
@@ -27,18 +27,27 @@ public class UserDAO {
             + "address, email, phoneNumber, roleID, createdDate) "
             + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
     
-    private final String SQL_GET_USER = "SELECT userID, fullName, email, address, phoneNumber, roleID "
-            + "FROM tblUsers WHERE userID = ? AND password = ?";
+    private final String SQL_UPDATE_USER = "UPDATE tblUsers "
+            + "SET fullName = ?, address = ?, email = ?, phoneNumber = ? "
+            + "WHERE userID = ?";
+    
+    private final String SQL_GET_USER = "SELECT u.userID, u.fullName, u.email, u.address, u.phoneNumber, u.roleID, r.roleName "
+            + "FROM tblUsers AS u JOIN tblRoles AS r ON u.roleID = r.roleID "
+            + "WHERE u.userID = ? AND u.password = ?";
     
     private final String SQL_GET_ROLE_NAME = "SELECT roleName FROM tblUsers AS u, tblRoles AS r WHERE "
             + "u.roleID = r.roleID AND u.roleID = ?";
     
     private final String SQL_CHECK_USER = "SELECT userID FROM tblUsers WHERE userID = ?";
+    
+    private final String SQL_GET_USER_BY_ID = "SELECT u.userID, u.fullName, u.email, u.address, u.phoneNumber, u.roleID, r.roleName "
+            + "FROM tblUsers AS u JOIN tblRoles AS r ON u.roleID = r.roleID "
+            + "WHERE u.userID = ?";
 
-    public boolean insertUser(UserDTO user) throws SQLException {
+    public String insertUser(UserDTO user) throws SQLException {
         Connection con = null;
         PreparedStatement stm = null;
-        int rows = -1;
+        String insertedUserID = null;
 
         try {
             con = DBUtil.getConnection();
@@ -50,10 +59,14 @@ public class UserDAO {
                 stm.setString(4, user.getAddress());
                 stm.setString(5, user.getEmail());
                 stm.setString(6, user.getPhoneNumber());
-                stm.setString(7, user.getRoleID());
+                stm.setString(7, user.getRole().getRoleID());
                 stm.setTimestamp(8, new Timestamp(user.getCreatedDate().getTime()));
 
-                rows = stm.executeUpdate();
+                int rows = stm.executeUpdate();
+                
+                if(rows > 0){
+                    insertedUserID = user.getUserID();
+                }
             }
 
         } catch (Exception e) {
@@ -67,12 +80,43 @@ public class UserDAO {
             }
         }
 
-        if (rows > 0) {
-            return true;
-        } else {
-            return false;
+        return insertedUserID;
+    }
+    
+    public boolean updateUser(UserDTO user) throws SQLException {
+        Connection con = null;
+        PreparedStatement stm = null;
+        boolean success = false;
+
+        try {
+            con = DBUtil.getConnection();
+            if (con != null) {
+                stm = con.prepareStatement(SQL_UPDATE_USER);
+                stm.setString(1, user.getFullName());
+                stm.setString(2, user.getAddress());
+                stm.setString(3, user.getEmail());
+                stm.setString(4, user.getPhoneNumber());
+                stm.setString(5, user.getUserID());
+               
+                int rows = stm.executeUpdate();
+                
+                if(rows > 0){
+                    success = true;
+                }
+            }
+
+        } catch (Exception e) {
+            LOGGER.error("Error while inserting user!", e);
+        } finally {
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
         }
-        
+
+        return success;
     }
     
     public UserDTO authenticateUser(String userID, String password) throws SQLException {
@@ -97,7 +141,10 @@ public class UserDAO {
                     user.setAddress(rs.getString("address"));
                     user.setEmail(rs.getString("email"));
                     user.setPhoneNumber(rs.getString("phoneNumber"));
-                    user.setRoleID(rs.getString("roleID"));
+                    String roleID = rs.getString("roleID");
+                    String roleName = rs.getString("roleName");
+                    RoleDTO role = new RoleDTO(roleID, roleName);
+                    user.setRole(role);
                 }
             }
 
@@ -179,5 +226,48 @@ public class UserDAO {
         }
         
         return isExisted;
+    }
+    
+    public UserDTO getUserByID(String userID) throws SQLException {
+        Connection con = null;
+        PreparedStatement stm = null;
+        ResultSet rs = null;
+        UserDTO user = null;
+
+        try {
+            con = DBUtil.getConnection();
+            if (con != null) {
+                stm = con.prepareStatement(SQL_GET_USER_BY_ID);
+                stm.setString(1, userID);
+                rs = stm.executeQuery();
+
+                if (rs.next()) {                    
+                   
+                    String fullName = rs.getString("fullName");
+                    String email = rs.getString("email");
+                    String addr = rs.getString("address");
+                    String phoneNumber = rs.getString("phoneNumber");
+                    String roleID = rs.getString("roleID");
+                    String roleName = rs.getString("roleName");
+                    
+                    user = new UserDTO(userID, "", fullName, addr, email, phoneNumber, null, new RoleDTO(roleID, roleName));
+
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (stm != null) {
+                stm.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+
+        return user;
     }
 }

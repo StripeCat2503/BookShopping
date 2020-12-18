@@ -19,7 +19,9 @@ import javax.servlet.http.HttpServletResponse;
  * @author DuyNK
  */
 public class ManageProductServlet extends HttpServlet {
-    private final String MANAGE_PAGE = "manage_product.jsp";
+
+    private final String MANAGE_PRODUCT_PAGE = "manage_product.jsp";
+    private final String ERROR = "not_found.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -32,8 +34,7 @@ public class ManageProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -49,15 +50,15 @@ public class ManageProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        String url = MANAGE_PAGE;
-        
+        String url = ERROR;
+
         try {
             ProductDAO dao = new ProductDAO();
-            List<ProductDTO> products = dao.getAllProducts();
+            List<ProductDTO> products = dao.getAllProducts();         
             request.setAttribute("PRODUCT_LIST", products);
+            url = MANAGE_PRODUCT_PAGE;
         } catch (Exception e) {
-        }
-        finally{
+        } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
     }

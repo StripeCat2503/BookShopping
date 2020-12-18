@@ -5,7 +5,7 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<footer class="fixed-bottom">
+<footer class="">
     <div class="bg-dark p-3 text-center">
         <p class="text-light">BookWorld Copyright@ 2020</p>
     </div>

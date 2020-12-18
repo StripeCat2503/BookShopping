@@ -19,6 +19,7 @@ public class UserRegisterValidationBean implements Serializable{
     private String emailError;
     private String addressError;
     private String phoneError;   
+    private String confirmPasswordError;   
 
     public UserRegisterValidationBean() {
     }
@@ -70,9 +71,18 @@ public class UserRegisterValidationBean implements Serializable{
     public void setPhoneError(String phoneError) {
         this.phoneError = phoneError;
     }
+
+    public String getConfirmPasswordError() {
+        return confirmPasswordError;
+    }
+
+    public void setConfirmPasswordError(String confirmPasswordError) {
+        this.confirmPasswordError = confirmPasswordError;
+    }
     
-    private final String REGEX_USERNAME = "^[a-z]\\w{4,14}$";
-    private final String REGEX_PASSWORD = "^[A-Z]\\w{4,14}$";
+    
+    private final String REGEX_USERNAME = "^[a-z]\\w{4,20}$";
+    private final String REGEX_PASSWORD = "^[A-Z]\\w{4,20}$";
     private final String REGEX_EMAIL = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
     private final String REGEX_PHONE = "[0-9]{10}";
     
@@ -104,12 +114,16 @@ public class UserRegisterValidationBean implements Serializable{
             isValidUser = false;
         }
         
-        if(!user.getUserID().matches(REGEX_USERNAME)){
-            this.userIdError = "User ID must start with a letter and contains 5 - 15 characters!";
+        if(!user.getUserID().matches(REGEX_USERNAME) && !user.getUserID().startsWith("guest-")){
+            this.userIdError = "User ID must start with a letter and contains 5 - 21 characters!";
             isValidUser = false;
         }
         if(!user.getPassword().matches(REGEX_PASSWORD)){
-            this.passwordError = "Password must start with an uppercase letter and contains 5 - 15 characters!";
+            this.passwordError = "Password must start with an uppercase letter and contains 5 - 21 characters!";
+            isValidUser = false;
+        }
+        if(!user.getConfirmPassword().equals(user.getPassword())){
+            this.confirmPasswordError = "Confirm password does not match!";
             isValidUser = false;
         }
         if(!user.getEmail().matches(REGEX_EMAIL)){

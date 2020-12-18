@@ -6,8 +6,10 @@
 package com.app.servlets;
 
 import com.app.daos.ProductDAO;
+import com.app.routes.AppRouting;
+import com.app.utils.MyUtils;
+import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,8 +21,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class DeleteProductServlet extends HttpServlet {
 
-    private final String SUCCESS = "ManageProductServlet";
     private final String FAIL = "not_found.html";
+    private final String SUCCESS = AppRouting.routes.get("manageProduct");
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -33,7 +35,7 @@ public class DeleteProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
+       
         String url = FAIL;
 
         try {
@@ -41,15 +43,20 @@ public class DeleteProductServlet extends HttpServlet {
             int productID = Integer.parseInt(productIDStr);
 
             ProductDAO dao = new ProductDAO();
-            
+
             boolean success = dao.deleteProduct(productID);
-            if(success){
+            if (success) {
+                // remove old image file if exists
+                String imageUrl = request.getParameter("image");
+                String basePath = getServletContext().getRealPath("");
+                String currentImagePath = basePath + File.separator + imageUrl;
+                MyUtils.deteteFile(currentImagePath);
                 url = SUCCESS;
             }
         } catch (Exception e) {
-        }
-        finally{
+        } finally {
             response.sendRedirect(url);
+//            request.getRequestDispatcher(url).forward(request, response);
         }
     }
 
