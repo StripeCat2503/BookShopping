@@ -22,19 +22,22 @@ import com.mservice.allinone.models.QueryStatusTransactionResponse;
 import com.mservice.allinone.processor.allinone.QueryStatusTransaction;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class VerifyMomoTransactionServlet extends HttpServlet {
-
+   private static final Logger LOGGER = Logger.getLogger(VerifyMomoTransactionServlet.class);
+    
     private final String SUCCESS = "order_success.html";
     private final String ERROR = "error.html";
 
@@ -122,7 +125,8 @@ public class VerifyMomoTransactionServlet extends HttpServlet {
 
                 }
             }
-        } catch (Exception e) {
+        } catch (IOException | SQLException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }

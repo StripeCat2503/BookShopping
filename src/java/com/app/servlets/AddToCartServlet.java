@@ -5,23 +5,29 @@
  */
 package com.app.servlets;
 
+import com.app.daos.ProductDAO;
 import com.app.dtos.CartDTO;
 import com.app.dtos.ProductDTO;
 import java.io.IOException;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class AddToCartServlet extends HttpServlet {
-    private final String HOME_PAGE = "index.jsp";
+    private static final Logger LOGGER = Logger.getLogger(AddToCartServlet.class);
+
+    private final String HOME_SERVLET = "HomeServlet";
     private final String SEARCH_RESULT = "SearchProductServlet";
     private final String FAIL = "error.html";
+    private final String PRODUCT_DETAILS_PAGE = "product_details.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -36,50 +42,61 @@ public class AddToCartServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String url = FAIL;
-        
+
         try {
+            String quantityParam = request.getParameter("quantity");
+
             String searchValue = request.getParameter("q");
             int productID = Integer.parseInt(request.getParameter("productID"));
             String productName = request.getParameter("productName");
             double price = Double.parseDouble(request.getParameter("price"));
             String imageUrl = request.getParameter("imgProduct");
             ProductDTO product = new ProductDTO();
-            
+
             product.setProductID(productID);
             product.setProductName(productName);
             product.setPrice(price);
-            product.setImage(imageUrl);          
-            
+            product.setImage(imageUrl);
+            product.setQuantity(1);
+
             HttpSession session = request.getSession();
             CartDTO cart = (CartDTO) session.getAttribute("CART");
-            if(cart == null){
+            if (cart == null) {
                 cart = new CartDTO();
             }
             
-            int currentQuantity = 1;
-            if(cart.getItems() != null && !cart.getItems().isEmpty() && cart.getItems().get(productID) != null){
-                currentQuantity = cart.getItems().get(productID).getQuantity();
-            }
-            
-            product.setQuantity(currentQuantity);
-            
-            cart.addItemToCart(product);
-            
+            int quantity = 1;
+            if (quantityParam != null) {
+                quantity = Integer.parseInt(quantityParam);
+            }          
+
+            cart.addItemToCart(product, quantity);
+
             session.setAttribute("CART", cart);
-           
-            url = HOME_PAGE;
-            
-            if(searchValue != null && !searchValue.isEmpty()){
-                url = SEARCH_RESULT;
-                request.setAttribute("SEARVH_VALUE", searchValue);
+
+            if (quantityParam == null) {
+                url = HOME_SERVLET;
+
+                if (searchValue != null && !searchValue.isEmpty()) {
+                    url = SEARCH_RESULT;
+                    request.setAttribute("SEARVH_VALUE", searchValue);
+                }
             }
-            
-        } catch (Exception e) {
-        }
-        finally{
+            else{
+                ProductDAO dao = new ProductDAO();
+                ProductDTO p = dao.getProductByID(productID);
+                if(p != null){
+                    request.setAttribute("PRODUCT", p);
+                    url = PRODUCT_DETAILS_PAGE;
+                }
+            }
+
+        } catch (NumberFormatException | SQLException e) {
+            LOGGER.error("Error: ", e);
+        } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
-    }  
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

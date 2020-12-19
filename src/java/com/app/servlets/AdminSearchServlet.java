@@ -8,17 +8,21 @@ package com.app.servlets;
 import com.app.daos.ProductDAO;
 import com.app.dtos.ProductDTO;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class AdminSearchServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(AdminSearchServlet.class);
+    
     private final String ADMIN_SEARCH_RESULT_PAGE = "manage_product_search.jsp";
     private final String ERROR = "error.html";
 
@@ -44,7 +48,8 @@ public class AdminSearchServlet extends HttpServlet {
 
             url = ADMIN_SEARCH_RESULT_PAGE;
 
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }

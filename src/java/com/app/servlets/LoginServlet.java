@@ -8,10 +8,8 @@ package com.app.servlets;
 import com.app.constants.Role;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
-import com.app.routes.AppRouting;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Map;
 import javax.servlet.RequestDispatcher;
 
 import javax.servlet.ServletException;
@@ -31,7 +29,7 @@ public class LoginServlet extends HttpServlet {
 
     private final String NOT_FOUND = "not_found.html";
     private final String ADMIN_PAGE = "admin.jsp";
-    private final String USER_PAGE = "index.jsp";
+    private final String HOME_SERVLET = "HomeServlet";
     private final String LOGIN_PAGE = "login.jsp";
 
     private final String LOGIN_ERR_MSG = "Invalid username or password!";
@@ -65,7 +63,7 @@ public class LoginServlet extends HttpServlet {
                     if (roleName.equals(Role.ADMIN)) {
                         url = ADMIN_PAGE;
                     } else if (roleName.equals(Role.USER)) {
-                        url = USER_PAGE;
+                        url = HOME_SERVLET;
                     }
 
                 } else {
@@ -78,7 +76,7 @@ public class LoginServlet extends HttpServlet {
                 url = LOGIN_PAGE;
             }
         } catch (SQLException ex) {
-            LOGGER.error("Error while login user", ex);
+            LOGGER.error("Error: ", ex);
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

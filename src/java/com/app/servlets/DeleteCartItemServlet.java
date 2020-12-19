@@ -12,12 +12,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class DeleteCartItemServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(DeleteCartItemServlet.class);
 
     private final String SUCCESS = "cart.jsp";
     private final String ERROR = "error.html";
@@ -46,7 +48,8 @@ public class DeleteCartItemServlet extends HttpServlet {
                 session.setAttribute("CART", cart);
             
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }

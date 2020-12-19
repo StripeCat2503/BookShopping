@@ -8,17 +8,20 @@ package com.app.servlets;
 import com.app.daos.OrderDAO;
 import com.app.dtos.OrderDTO;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class ManageOrderServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(ManageOrderServlet.class);
 
     private final String MANAGE_ORDER_PAGE = "manage_order.jsp";
     private final String ERROR = "not_found.html";
@@ -44,7 +47,8 @@ public class ManageOrderServlet extends HttpServlet {
             request.setAttribute("ORDERS", orders);
             url = MANAGE_ORDER_PAGE;
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }

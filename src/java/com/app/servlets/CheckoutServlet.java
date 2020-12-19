@@ -45,12 +45,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class CheckoutServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(CheckoutServlet.class);
 
     private final String SUCCESS = "order_success.html";
     private final String ERROR = "error.html";
@@ -177,8 +179,8 @@ public class CheckoutServlet extends HttpServlet {
                 session.setAttribute("PAYMENT_METHODS", methods);
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (SQLException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
@@ -349,7 +351,7 @@ public class CheckoutServlet extends HttpServlet {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("Error: ", e);
         } finally {
 
             if (!redirectFlag) {

@@ -5,20 +5,26 @@
  */
 package com.app.servlets;
 
+import com.app.daos.ProductCategoryDAO;
 import com.app.daos.ProductDAO;
+import com.app.dtos.ProductCategoryDTO;
 import com.app.dtos.ProductDTO;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class SearchProductServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(SearchProductServlet.class);
+    
     private final String USER_SEARCH_RESULT_PAGE = "product_search_result.jsp";
     private final String ERROR = "error.html";
     
@@ -41,12 +47,16 @@ public class SearchProductServlet extends HttpServlet {
             String searchValue = request.getParameter("q");
             ProductDAO dao = new ProductDAO();
             List<ProductDTO> results = dao.searchProductsByName(searchValue);
+            ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
+            List<ProductCategoryDTO> categories = categoryDAO.getAllCategories();
             request.setAttribute("SEARCH_PRODUCTS", results);     
             request.setAttribute("SEARCH_VALUE", searchValue);
+            request.setAttribute("CATEGORY_LIST", categories);
             
             url = USER_SEARCH_RESULT_PAGE;
             
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            LOGGER.error("Error: ", e);
         }
         finally{
             request.getRequestDispatcher(url).forward(request, response);

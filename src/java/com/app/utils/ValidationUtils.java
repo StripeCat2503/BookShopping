@@ -12,18 +12,18 @@ package com.app.utils;
 public class ValidationUtils {
     public static boolean isInteger(String n){
         try {
-            int number = Integer.parseInt(n);
+            Integer.parseInt(n);
             return true;
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
     
     public static boolean isDouble(String n){
         try {
-            double number = Double.parseDouble(n);
+            Double.parseDouble(n);
             return true;
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }

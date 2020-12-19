@@ -8,17 +8,21 @@ package com.app.servlets;
 import com.app.daos.ProductDAO;
 import com.app.dtos.ProductDTO;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class ManageProductServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(ManageProductServlet.class);
 
     private final String MANAGE_PRODUCT_PAGE = "manage_product.jsp";
     private final String ERROR = "not_found.html";
@@ -34,7 +38,18 @@ public class ManageProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String url = ERROR;
 
+        try {
+            ProductDAO dao = new ProductDAO();
+            List<ProductDTO> products = dao.getAllProducts();
+            request.setAttribute("PRODUCT_LIST", products);
+            url = MANAGE_PRODUCT_PAGE;
+        } catch (SQLException e) {
+            LOGGER.error("Error: ", e);
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -50,17 +65,6 @@ public class ManageProductServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
-        String url = ERROR;
-
-        try {
-            ProductDAO dao = new ProductDAO();
-            List<ProductDTO> products = dao.getAllProducts();         
-            request.setAttribute("PRODUCT_LIST", products);
-            url = MANAGE_PRODUCT_PAGE;
-        } catch (Exception e) {
-        } finally {
-            request.getRequestDispatcher(url).forward(request, response);
-        }
     }
 
     /**

@@ -7,18 +7,21 @@ package com.app.servlets;
 
 import com.app.dtos.CartDTO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class UpdateCartServlet extends HttpServlet {
+
+    private static final Logger LOGGER = Logger.getLogger(UpdateCartServlet.class);
+
     private final String SUCCESS = "cart.jsp";
     private final String ERROR = "error.html";
 
@@ -34,24 +37,28 @@ public class UpdateCartServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String url = ERROR;
-        
-        String[] productIDs = request.getParameterValues("productID");
-        HttpSession session = request.getSession();
-        CartDTO cart = (CartDTO) session.getAttribute("CART");
-        
-        if(productIDs != null && cart != null){
-            for(String id : productIDs){
-                int productID = Integer.parseInt(id);
-                int quantity = Integer.parseInt(request.getParameter("quantity-" + id));
-                cart.updateCart(productID, quantity);
+
+        try {
+            String[] productIDs = request.getParameterValues("productID");
+            HttpSession session = request.getSession();
+            CartDTO cart = (CartDTO) session.getAttribute("CART");
+
+            if (productIDs != null && cart != null) {
+                for (String id : productIDs) {
+                    int productID = Integer.parseInt(id);
+                    int quantity = Integer.parseInt(request.getParameter("quantity-" + id));
+                    cart.updateCart(productID, quantity);
+                }
+
+                session.setAttribute("CART", cart);
+                url = SUCCESS;
             }
-            
-            session.setAttribute("CART", cart);
-            url = SUCCESS;
+        } catch (NumberFormatException e) {
+            LOGGER.error("Error: ", e);
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
         }
-        
-        request.getRequestDispatcher(url).forward(request, response);
-        
+
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

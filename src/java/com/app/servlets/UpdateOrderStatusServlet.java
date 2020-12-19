@@ -7,17 +7,20 @@ package com.app.servlets;
 
 import com.app.daos.OrderDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class UpdateOrderStatusServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(UpdateOrderStatusServlet.class);
+    
     private final String SUCCESS = "OrderDetailsServlet";
     private final String ERROR = "error.html";
 
@@ -43,7 +46,8 @@ public class UpdateOrderStatusServlet extends HttpServlet {
             if(success){
                 url = SUCCESS + "?id=" + orderID;
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException | SQLException e) {
+            LOGGER.error("Error: ", e);
         }
         finally{
             request.getRequestDispatcher(url).forward(request, response);

@@ -13,15 +13,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import org.apache.log4j.Logger;
+import javax.naming.NamingException;
 
 /**
  *
  * @author DuyNK
  */
 public class UserDAO {
-
-    private static final Logger LOGGER = Logger.getLogger(UserDAO.class);
 
     private final String SQL_INSERT_USER = "INSERT INTO tblUsers(userID, password, fullName, "
             + "address, email, phoneNumber, roleID, createdDate) "
@@ -44,7 +42,7 @@ public class UserDAO {
             + "FROM tblUsers AS u JOIN tblRoles AS r ON u.roleID = r.roleID "
             + "WHERE u.userID = ?";
 
-    public String insertUser(UserDTO user) throws SQLException {
+    public String insertUser(UserDTO user) throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
         String insertedUserID = null;
@@ -69,8 +67,6 @@ public class UserDAO {
                 }
             }
 
-        } catch (Exception e) {
-            LOGGER.error("Error while inserting user!", e);
         } finally {
             if (stm != null) {
                 stm.close();
@@ -83,7 +79,7 @@ public class UserDAO {
         return insertedUserID;
     }
     
-    public boolean updateUser(UserDTO user) throws SQLException {
+    public boolean updateUser(UserDTO user) throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
         boolean success = false;
@@ -105,8 +101,6 @@ public class UserDAO {
                 }
             }
 
-        } catch (Exception e) {
-            LOGGER.error("Error while inserting user!", e);
         } finally {
             if (stm != null) {
                 stm.close();
@@ -119,7 +113,7 @@ public class UserDAO {
         return success;
     }
     
-    public UserDTO authenticateUser(String userID, String password) throws SQLException {
+    public UserDTO authenticateUser(String userID, String password) throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -148,8 +142,6 @@ public class UserDAO {
                 }
             }
 
-        } catch (Exception e) {
-            LOGGER.error("Error while inserting user!", e);
         } finally {
             if (stm != null) {
                 stm.close();
@@ -162,7 +154,7 @@ public class UserDAO {
         return user;
     }
     
-    public String getUserRoleName(String roleID) throws SQLException{
+    public String getUserRoleName(String roleID) throws SQLException, NamingException{
         Connection con = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -181,8 +173,6 @@ public class UserDAO {
                 }
             }
 
-        } catch (Exception e) {
-            LOGGER.error("Error while get role name of user!", e);
         } finally {
             if (stm != null) {
                 stm.close();
@@ -195,7 +185,7 @@ public class UserDAO {
         return roleName;
     }
     
-    public boolean isExistedUser(String userID) throws SQLException{
+    public boolean isExistedUser(String userID) throws SQLException, NamingException{
         Connection con = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -214,8 +204,6 @@ public class UserDAO {
                 }
             }
 
-        } catch (Exception e) {
-            LOGGER.error("Error while check duplicate user!", e);
         } finally {
             if (stm != null) {
                 stm.close();
@@ -228,7 +216,7 @@ public class UserDAO {
         return isExisted;
     }
     
-    public UserDTO getUserByID(String userID) throws SQLException {
+    public UserDTO getUserByID(String userID) throws SQLException, NamingException {
         Connection con = null;
         PreparedStatement stm = null;
         ResultSet rs = null;
@@ -254,8 +242,6 @@ public class UserDAO {
 
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             if (rs != null) {
                 rs.close();

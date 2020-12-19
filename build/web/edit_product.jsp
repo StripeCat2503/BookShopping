@@ -8,7 +8,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
-   
+
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Update product</title>
@@ -86,6 +86,14 @@
                         </c:if>
 
                     </select>
+                </div>
+                <div class="form-group my-2">
+                    <label for="">Author</label>
+                    <input class='form-control' type='text' placeholder="Optional" name='author' value="${requestScope.PRODUCT.author}"/>
+                </div>
+                <div class="form-group my-2">
+                    <label for="">Publisher</label>
+                    <input class="form-control" type='text' placeholder="Optional" name='publisher' value="${requestScope.PRODUCT.publisher}"/>
                 </div>
                 <small class="text-success d-block">${requestScope.SUCCESS_MSG}</small>           
                 <input type="submit" value="Save" class="btn btn-success">

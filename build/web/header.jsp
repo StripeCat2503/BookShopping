@@ -11,7 +11,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<nav class="navbar navbar-expand-lg shadow-sm bg-white">
+<nav class="navbar navbar-expand-lg shadow-sm bg-white sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand text-dark fw-bold" href="${pageContext.request.servletContext.contextPath}">BookWorld</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

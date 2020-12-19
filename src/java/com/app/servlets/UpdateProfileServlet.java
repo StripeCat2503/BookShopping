@@ -9,17 +9,20 @@ import com.app.beans.CheckoutValidationBean;
 import com.app.daos.UserDAO;
 import com.app.dtos.UserDTO;
 import java.io.IOException;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class UpdateProfileServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(UpdateProductServlet.class);
 
     private final String SUCCESS = "user_profile.jsp";
     private final String ERROR = "user_profile.jsp";
@@ -75,7 +78,8 @@ public class UpdateProfileServlet extends HttpServlet {
                 }
 
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }

@@ -1,0 +1,32 @@
+.product {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    margin: 20px auto;
+}
+
+.product .product-image {
+    width: 300px;
+    height: 90vh;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    flex: 1;
+}
+
+.product .product-info {
+    flex: 1;
+    padding: 20px;
+}
+
+.btn-add-to-cart{
+    height: 60px;
+    border: none;
+    background-color: #e056fd;
+    color: white;
+    border-radius: 5px;
+}
+
+.btn-add-to-cart:hover{
+    background-color: #be2edd;
+}

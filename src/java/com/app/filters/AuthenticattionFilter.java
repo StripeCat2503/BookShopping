@@ -15,7 +15,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.List;
+import javax.naming.NamingException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -33,6 +35,8 @@ import org.apache.log4j.Logger;
  */
 public class AuthenticattionFilter implements Filter {
 
+    private static final Logger LOGGER = Logger.getLogger(AuthenticattionFilter.class);
+
     private final List<String> ADMIN_ROUTES;
 
     private final List<String> USER_ROUTES;
@@ -41,7 +45,7 @@ public class AuthenticattionFilter implements Filter {
 
     private final String LOGIN_PAGE = "login.jsp";
     private final String ADMIN_PAGE = "admin.jsp";
-    private final String USER_PAGE = "index.jsp";
+    private final String HOME_SERVLET = "HomeServlet";
     private final String FOBIDDEN_PAGE = "forbidden.html";
 
     private static final boolean debug = true;
@@ -51,10 +55,6 @@ public class AuthenticattionFilter implements Filter {
     // configured. 
     private FilterConfig filterConfig = null;
 
-    private static final Logger LOGGER = Logger.getLogger(AuthenticattionFilter.class);
-
-    private final String NOT_FOUND = "not_found.html";
-
     public AuthenticattionFilter() {
         // init all routes for the app
         AppRouting.initRoutes();
@@ -63,7 +63,7 @@ public class AuthenticattionFilter implements Filter {
         GUEST_ROUTES = AppRouting.guestRoutes;
         LogUtils.init();
         Momo.init();
-      
+
     }
 
     private void doBeforeProcessing(ServletRequest request, ServletResponse response)
@@ -113,17 +113,15 @@ public class AuthenticattionFilter implements Filter {
                 || resource.equals("login.jsp");
         boolean isRegisterRequest = resource.equals("register") || resource.equals("RegisterServlet")
                 || resource.equals("register.jsp");
-        boolean isHomePage = resource.isEmpty();
+        boolean isHomePage = resource.isEmpty() || resource.endsWith("index.jsp");
         boolean isStaticRequestFile = resource.endsWith(".css") || resource.endsWith(".js")
                 || resource.endsWith(".png") || resource.endsWith(".jpg") || resource.endsWith(".svg");
 
-//        boolean resourceFound = ADMIN_ROUTES.contains(resource)
-//                || USER_ROUTES.contains(resource) || GUEST_ROUTES.contains(resource) || resource.isEmpty() || isStaticRequestFile;
-        if (isStaticRequestFile) {
-            chain.doFilter(request, response);
-        } else {
-            if (isAuthenticated) {
-                try {
+        try {
+            if (isStaticRequestFile) {
+                chain.doFilter(request, response);
+            } else {
+                if (isAuthenticated) {
                     // check role of user
                     UserDTO loggedInUser = (UserDTO) session.getAttribute("user");
 
@@ -135,38 +133,41 @@ public class AuthenticattionFilter implements Filter {
                         if (roleName.equals(Role.ADMIN)) {
                             request.getRequestDispatcher(ADMIN_PAGE).forward(request, response);
                         } else if (roleName.equals(Role.USER)) {
-                            request.getRequestDispatcher(USER_PAGE).forward(request, response);
+                            request.getRequestDispatcher(HOME_SERVLET).forward(request, response);
                         }
                     } else {
                         if (roleName.equals(Role.ADMIN) && isAdminResource) {
                             chain.doFilter(request, response);
                         }
-                        if (roleName.equals(Role.USER) && (isUserResource || isGuestResource)) {
+                        else if (roleName.equals(Role.USER) && (isUserResource || isGuestResource)) {
                             chain.doFilter(request, response);
                         }
-                        if ((roleName.equals(Role.ADMIN) && !isAdminResource)
+                        else if ((roleName.equals(Role.ADMIN) && !isAdminResource)
                                 || roleName.equals(Role.USER) && !isUserResource) {
                             request.getRequestDispatcher(FOBIDDEN_PAGE).forward(request, response);
                         }
 
                     }
-
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    LOGGER.error("Error at when get usser role name", ex);
-                }
-            } else {
-                if (isAdminResource || isUserResource) {
-                    if (isHomePage) {
-                        request.getRequestDispatcher(USER_PAGE).forward(request, response);
-                    } else {
-                        res.sendRedirect(LOGIN_PAGE);
-                    }
-
                 } else {
-                    chain.doFilter(request, response);
+                    if (isAdminResource || isUserResource) {
+                        if (isHomePage) {
+                            request.getRequestDispatcher(HOME_SERVLET).forward(request, response);
+                        } else {
+                            res.sendRedirect(LOGIN_PAGE);
+                        }
+
+                    } else {
+                        if (isHomePage) {
+                            request.getRequestDispatcher(HOME_SERVLET).forward(request, response);
+                        } else {
+                            chain.doFilter(request, response);
+                        }
+
+                    }
                 }
             }
+        } catch (IOException | SQLException | NamingException | ServletException e) {
+            LOGGER.error("Error: ", e);
         }
 
     }

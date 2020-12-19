@@ -14,11 +14,13 @@ import com.app.dtos.UserDTO;
 import com.app.utils.GoogleUtils;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -26,8 +28,10 @@ import javax.servlet.http.HttpSession;
  */
 public class LoginGoogleServlet extends HttpServlet {
 
+    private static final Logger LOGGER = Logger.getLogger(LoginGoogleServlet.class);
+
     private final String LOGIN_PAGE = "login.jsp";
-    private final String USER_PAGE = "index.jsp";
+    private final String HOME_SERVLET = "HomeServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -49,38 +53,35 @@ public class LoginGoogleServlet extends HttpServlet {
             if (code != null && !code.isEmpty()) {
                 String token = GoogleUtils.getToken(code);
                 GoogleUserDTO googleUser = GoogleUtils.getUserInfo(token);
-                
+
                 String userID = googleUser.getId();
-                
+
                 UserDAO userDAO = new UserDAO();
-                
+
                 UserDTO loggedInUser = userDAO.getUserByID(userID);
                 HttpSession session = request.getSession();
-                if(loggedInUser != null){
+                if (loggedInUser != null) {
                     session.setAttribute("user", loggedInUser);
-                    url = USER_PAGE;
-                }
-                else{
+                    url = HOME_SERVLET;
+                } else {
                     String fullName = googleUser.getName();
                     String email = googleUser.getEmail();
                     Date createdDate = new Date(new java.util.Date().getTime());
                     RoleDAO roleDAO = new RoleDAO();
                     String roleID = roleDAO.getRoleIdByRoleName(Role.USER);
                     UserDTO newUser = new UserDTO(userID, "", fullName, "", email, "", createdDate, new RoleDTO(roleID, ""));
-                    
+
                     String createdUserID = userDAO.insertUser(newUser);
-                    if(createdUserID != null){
+                    if (createdUserID != null) {
                         session.setAttribute("user", newUser);
-                        url = USER_PAGE;
+                        url = HOME_SERVLET;
                     }
                 }
-                
 
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally{
+        } catch (IOException | SQLException e) {
+            LOGGER.error("Error: ", e);
+        } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
     }

@@ -5,27 +5,29 @@
  */
 package com.app.servlets;
 
+import com.app.daos.ProductCategoryDAO;
 import com.app.daos.ProductDAO;
-import com.app.routes.AppRouting;
-import com.app.utils.MyUtils;
-import java.io.File;
+import com.app.dtos.ProductCategoryDTO;
+import com.app.dtos.ProductDTO;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
-public class DeleteProductServlet extends HttpServlet {
-    private static final Logger LOGGER = Logger.getLogger(DeleteProductServlet.class);
-
-    private final String FAIL = "not_found.html";
-    private final String SUCCESS = AppRouting.routes.get("manageProduct");
+public class HomeServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(HomeServlet.class);
+    
+    private final String HOME_PAGE = "index.jsp";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,30 +40,50 @@ public class DeleteProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
-        String url = FAIL;
-
+        request.setCharacterEncoding("UTF-8");
+        String url = HOME_PAGE;
+        
+        String categoryID = request.getParameter("category_id");
+        HttpSession session = request.getSession();
+        
         try {
-            String productIDStr = request.getParameter("productID");
-            int productID = Integer.parseInt(productIDStr);
-
             ProductDAO dao = new ProductDAO();
-
-            boolean success = dao.deleteProduct(productID);
-            if (success) {
-                // remove old image file if exists
-                String imageUrl = request.getParameter("image");
-                String basePath = getServletContext().getRealPath("");
-                String currentImagePath = basePath + File.separator + imageUrl;
-                MyUtils.deteteFile(currentImagePath);
-                url = SUCCESS;
+            List<ProductDTO> products = dao.getAllProducts();           
+            ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
+            List<ProductCategoryDTO> categories = categoryDAO.getAllCategories();
+            // filter product by category
+            if(categoryID != null){
+                products = filterProductByCategory(products, Integer.parseInt(categoryID));
+                
+                session.setAttribute("CATEGORY_STATE", categoryID);
             }
-        } catch (IOException | NumberFormatException | SQLException | ServletException e) {
+            else{
+                session.removeAttribute("CATEGORY_STATE");
+            }
+            
+            request.setAttribute("CATEGORY_LIST", categories);
+            request.setAttribute("PRODUCT_LIST", products);
+        } catch (NumberFormatException | SQLException e) {
             LOGGER.error("Error: ", e);
-        } finally {
-            response.sendRedirect(url);
-//            request.getRequestDispatcher(url).forward(request, response);
         }
+        finally{
+            request.getRequestDispatcher(url).forward(request, response);
+        }
+    }
+    
+    private List<ProductDTO> filterProductByCategory(List<ProductDTO> products, int categoryID){
+        List<ProductDTO> results = null;
+        
+        for(ProductDTO p : products){
+            if(p.getCategory().getCategoryID() == categoryID){
+                if(results == null){
+                    results = new ArrayList<>();                    
+                }
+                results.add(p);
+            }
+        }
+        
+        return results;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

@@ -96,6 +96,14 @@
         <servlet-name>UpdateProfileServlet</servlet-name>
         <servlet-class>com.app.servlets.UpdateProfileServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>HomeServlet</servlet-name>
+        <servlet-class>com.app.servlets.HomeServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ProductDetailsServlet</servlet-name>
+        <servlet-class>com.app.servlets.ProductDetailsServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -175,6 +183,14 @@
     <servlet-mapping>
         <servlet-name>UpdateProfileServlet</servlet-name>
         <url-pattern>/UpdateProfileServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HomeServlet</servlet-name>
+        <url-pattern>/HomeServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ProductDetailsServlet</servlet-name>
+        <url-pattern>/ProductDetailsServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

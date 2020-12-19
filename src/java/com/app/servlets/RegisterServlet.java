@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -26,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RegisterServlet extends HttpServlet {
 
-    private static final org.apache.log4j.Logger LOGGER = org.apache.log4j.Logger.getLogger(RegisterServlet.class);
+    private static final Logger LOGGER = Logger.getLogger(RegisterServlet.class);
 
     private final String REGISTER_PAGE = AppRouting.routes.get("register");
     private final String REGISTER_SUCCESS_PAGE = "register_success.html";
@@ -100,8 +101,8 @@ public class RegisterServlet extends HttpServlet {
                 request.setAttribute("email", newUser.getEmail());
                 request.setAttribute("phone", newUser.getPhoneNumber());
             }
-        } catch (SQLException ex) {
-            LOGGER.error("error when inserting user!", ex);
+        } catch (SQLException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             RequestDispatcher rd = request.getRequestDispatcher(url);
             rd.forward(request, response);

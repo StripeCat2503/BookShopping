@@ -6,7 +6,6 @@
 package com.app.daos;
 
 import com.app.dtos.ProductCategoryDTO;
-import com.app.dtos.ProductDTO;
 import com.app.utils.DBUtil;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

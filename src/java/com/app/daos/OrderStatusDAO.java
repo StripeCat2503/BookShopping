@@ -5,11 +5,9 @@
  */
 package com.app.daos;
 
-import com.app.dtos.OrderDTO;
 import com.app.dtos.OrderStatusDTO;
 import com.app.utils.DBUtil;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

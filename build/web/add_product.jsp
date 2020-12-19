@@ -78,6 +78,14 @@
 
                     </select>
                 </div>
+                <div class="form-group my-2">
+                    <label for="">Author</label>
+                    <input class='form-control' type='text' placeholder="Optional" name='author' />
+                </div>
+                <div class="form-group my-2">
+                    <label for="">Publisher</label>
+                    <input class="form-control" type='text' placeholder="Optional" name='publisher' />
+                </div>
                 <small class="text-success d-block my-3">${requestScope.SUCCESS_MSG}</small>           
                 <input type="submit" value="Add product" class="btn btn-success">
                 <a href="manageProduct" class="btn btn-danger">Cancel</a>

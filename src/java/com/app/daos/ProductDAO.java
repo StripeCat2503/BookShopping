@@ -23,11 +23,12 @@ import java.util.List;
  */
 public class ProductDAO {
 
-    private final String SQL_GET_ALL_PRODUCTS = "SELECT productID, productName, price, quantity, status, image, description, p.categoryID, c.categoryName "
-            + "FROM tblProducts AS p, tblProductCategories AS c "
-            + "WHERE p.categoryID = c.categoryID";
+    private final String SQL_GET_ALL_PRODUCTS = "SELECT p.productID, p.productName, p.price, "
+            + "p.quantity, p.status, p.image, p.description, p.categoryID, c.categoryName, p.author, p.publisher "
+            + "FROM tblProducts AS p JOIN tblProductCategories AS c "
+            + "ON p.categoryID = c.categoryID";
 
-    private final String SQL_GET_PRODUCT_BY_ID = "SELECT productID, productName, price, quantity, status, image, description, categoryID "
+    private final String SQL_GET_PRODUCT_BY_ID = "SELECT productID, productName, price, quantity, status, image, description, categoryID, author, publisher "
             + "FROM tblProducts WHERE productID = ?";
 
     private final String SQL_GET_PRODUCT_BY_CATEGORY = "SELECT productID, productName, price, quantity, status, image, description, categoryID "
@@ -39,13 +40,13 @@ public class ProductDAO {
     private final String SQL_GET_PRODUCT_BY_NAME = "SELECT productID "
             + "FROM tblProducts WHERE productName = ?";
 
-    private final String SQL_INSERT_PRODUCT = "INSERT INTO tblProducts(productName, price, quantity, image, description, status, categoryID, nonAccentProductName) "
-            + "VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
+    private final String SQL_INSERT_PRODUCT = "INSERT INTO tblProducts(productName, price, quantity, image, description, status, categoryID, nonAccentProductName, author, publisher) "
+            + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     private final String SQL_DELETE_PRODUCT = "DELETE FROM tblProducts WHERE productID = ?";
 
     private final String SQL_UPDATE_PRODUCT = "UPDATE tblProducts SET productName = ?, price = ?, quantity = ?, image = ?, description = ?, "
-            + "status = ?, categoryID = ?, nonAccentProductName = ?"
+            + "status = ?, categoryID = ?, nonAccentProductName = ?, author = ?, publisher = ? "
             + "WHERE productID = ?";
 
     public boolean insertProduct(ProductDTO product) throws SQLException {
@@ -65,10 +66,12 @@ public class ProductDAO {
                 stm.setString(4, product.getImage());
                 stm.setString(5, product.getDescription());
                 stm.setBoolean(6, product.isStatus());
-                stm.setInt(7, product.getCategory().getCategoryID());
+                stm.setInt(7, product.getCategory().getCategoryID());         
                 
                 String nonAccentProductName = MyUtils.toNonAccentString(product.getProductName());
                 stm.setString(8, nonAccentProductName);
+                stm.setString(9, product.getAuthor());
+                stm.setString(10, product.getPublisher());
 
                 int rows = stm.executeUpdate();
 
@@ -111,7 +114,10 @@ public class ProductDAO {
                 String nonAccentProductName = MyUtils.toNonAccentString(product.getProductName());
                 stm.setString(8, nonAccentProductName);
                 
-                stm.setInt(9, product.getProductID());
+                stm.setString(9, product.getAuthor());
+                stm.setString(10, product.getPublisher());
+                
+                stm.setInt(11, product.getProductID());
 
                 int rows = stm.executeUpdate();
 
@@ -192,10 +198,12 @@ public class ProductDAO {
                     des = des.length() > 50 ? des.substring(0, 20) + "..." : des;
                     int categoryID = rs.getInt("categoryID");
                     String categoryName = rs.getString("categoryName");
+                    String author = rs.getString("author");
+                    String publisher = rs.getString("publisher");
 
                     ProductCategoryDTO category = new ProductCategoryDTO(categoryID, categoryName);
 
-                    ProductDTO product = new ProductDTO(productID, productName, price, quantity, isActive, image, des, category);
+                    ProductDTO product = new ProductDTO(productID, productName, price, quantity, isActive, image, des, category, author, publisher);
                     productList.add(product);
                 }
             }
@@ -239,10 +247,12 @@ public class ProductDAO {
                     image = image.isEmpty() ? MyConstants.DEFAULT_PRODUCT_IMAGE_URL : image.replace("\\", "/");
                     String des = rs.getString("description");
                     int categoryID = rs.getInt("categoryID");
+                    String author = rs.getString("author");
+                    String publisher = rs.getString("publisher");
 
                     ProductCategoryDTO category = new ProductCategoryDTO(categoryID);
 
-                    product = new ProductDTO(productID, productName, price, quantity, isActive, image, des, category);
+                    product = new ProductDTO(productID, productName, price, quantity, isActive, image, des, category, author, publisher);
                 }
             }
         } catch (Exception e) {

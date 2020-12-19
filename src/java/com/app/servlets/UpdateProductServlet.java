@@ -11,17 +11,18 @@ import com.app.daos.ProductCategoryDAO;
 import com.app.daos.ProductDAO;
 import com.app.dtos.ProductCategoryDTO;
 import com.app.dtos.ProductDTO;
-import com.app.routes.AppRouting;
 import com.app.utils.MyUtils;
 import com.app.utils.ValidationUtils;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -33,9 +34,9 @@ import javax.servlet.http.HttpServletResponse;
         maxRequestSize = 1024 * 1024 * 100
 )
 public class UpdateProductServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(UpdateProductServlet.class);
 
     private final String UPDATE_PRODUCT_PAGE = "edit_product.jsp";
-    private final String MANAGE_PRODUCT = AppRouting.routes.get("manageProduct");
     private final String ERROR_PAGE = "not_found.html";
 
     /**
@@ -83,7 +84,8 @@ public class UpdateProductServlet extends HttpServlet {
 
             url = UPDATE_PRODUCT_PAGE;
 
-        } catch (Exception e) {
+        } catch (NumberFormatException | SQLException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
@@ -112,6 +114,9 @@ public class UpdateProductServlet extends HttpServlet {
         int categoryID = Integer.parseInt(request.getParameter("slCategory").trim());
         String oldImageUrl = request.getParameter("oldImgProduct").trim();
         oldImageUrl = oldImageUrl.trim().equals(MyConstants.DEFAULT_PRODUCT_IMAGE_URL) ? "" : oldImageUrl;
+        
+        String author = request.getParameter("author");
+        String publisher = request.getParameter("publisher");
 
         String url = ERROR_PAGE;
 
@@ -152,7 +157,7 @@ public class UpdateProductServlet extends HttpServlet {
 
                 imageUrl = imageUrl.isEmpty() ? oldImageUrl : imageUrl;
 
-                ProductDTO product = new ProductDTO(productID, productName, price, quantity, status, imageUrl, des, new ProductCategoryDTO(categoryID));
+                ProductDTO product = new ProductDTO(productID, productName, price, quantity, status, imageUrl, des, new ProductCategoryDTO(categoryID), author, publisher);
 
                 boolean isValidProduct = productValidationBean.isValidProduct(product);
                 if (isValidProduct) {
@@ -176,8 +181,8 @@ public class UpdateProductServlet extends HttpServlet {
             ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
             List<ProductCategoryDTO> categoryList = categoryDAO.getAllCategories();
             request.setAttribute("CATEGORY_LIST", categoryList);
-        } catch (Exception e) {
-
+        } catch (IOException | NumberFormatException | SQLException | ServletException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }

@@ -6,19 +6,21 @@
 package com.app.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.apache.log4j.Logger;
 
 /**
  *
  * @author DuyNK
  */
 public class LogoutServlet extends HttpServlet {
-    private final String HOME_PAGE = "/BookShopping";
+    private static final Logger LOGGER = Logger.getLogger(LogoutServlet.class);
+
+    private final String HOME_SERVLET = "HomeServlet";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,12 +33,20 @@ public class LogoutServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        if(session != null && session.getAttribute("user") != null){
-            session.removeAttribute("user");
+
+        String url = HOME_SERVLET;
+
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null && session.getAttribute("user") != null) {
+                session.removeAttribute("user");
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error: ", e);
+        } finally {
+            request.getRequestDispatcher(url).forward(request, response);
         }
-        
-        response.sendRedirect(HOME_PAGE);
+       
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

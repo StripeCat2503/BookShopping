@@ -19,6 +19,8 @@ public class ProductDTO {
     private String image;
     private String description;
     private ProductCategoryDTO category;
+    private String author;
+    private String publisher;
 
     public ProductDTO() {
     }
@@ -43,6 +45,33 @@ public class ProductDTO {
         this.description = description;
         this.category = category;
     }
+
+    public ProductDTO(String productName, double price, int quantity, boolean status, String image, String description, ProductCategoryDTO category, String author, String publisher) {
+        this.productName = productName;
+        this.price = price;
+        this.quantity = quantity;
+        this.status = status;
+        this.image = image;
+        this.description = description;
+        this.category = category;
+        this.author = author;
+        this.publisher = publisher;
+    }
+
+    public ProductDTO(int productID, String productName, double price, int quantity, boolean status, String image, String description, ProductCategoryDTO category, String author, String publisher) {
+        this.productID = productID;
+        this.productName = productName;
+        this.price = price;
+        this.quantity = quantity;
+        this.status = status;
+        this.image = image;
+        this.description = description;
+        this.category = category;
+        this.author = author;
+        this.publisher = publisher;
+    }
+    
+    
 
     public int getProductID() {
         return productID;
@@ -106,6 +135,22 @@ public class ProductDTO {
 
     public void setCategory(ProductCategoryDTO category) {
         this.category = category;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     

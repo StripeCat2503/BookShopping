@@ -26,17 +26,21 @@ public class CartDTO {
         numberOfItems = 0;
     }
 
-    public void addItemToCart(ProductDTO product){
+    public void addItemToCart(ProductDTO product, int newQuantity){
         if(this.items == null){
             this.items = new HashMap<>();
         }
         
         if(this.items.containsKey(product.getProductID())){
-            int currentQuantity = product.getQuantity();
-            product.setQuantity(currentQuantity + 1);
+            int currentQuantity = this.items.get(product.getProductID()).getQuantity();
+            this.items.get(product.getProductID()).setQuantity(currentQuantity + newQuantity);
+        }
+        else{
+            product.setQuantity(newQuantity);
+            this.items.put(product.getProductID(), product);
         }
         
-        this.items.put(product.getProductID(), product);
+        
         updateTotal();
         numberOfItems = this.items.size();
     }

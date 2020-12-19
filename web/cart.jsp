@@ -49,7 +49,9 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>${item.value.productName}</td>
+                                        <td>
+                                            <a style='text-decoration: none;' href="ProductDetailsServlet?id=${item.value.productID}">${item.value.productName}</a>
+                                        </td>
                                         <fmt:formatNumber value="${item.value.price}" var="fmtPrice" type="currency" maxFractionDigits="0" currencySymbol="đ"/>
                                         <td>${fmtPrice}</td>
                                         <td>

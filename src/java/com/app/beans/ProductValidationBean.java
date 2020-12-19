@@ -5,8 +5,6 @@
  */
 package com.app.beans;
 
-import com.app.daos.ProductDAO;
-import com.app.daos.UserDAO;
 import com.app.dtos.ProductDTO;
 import java.io.Serializable;
 import java.sql.SQLException;

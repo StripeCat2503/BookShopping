@@ -6,9 +6,7 @@
 package com.app.servlets;
 
 import com.app.daos.ProductDAO;
-import com.app.routes.AppRouting;
-import com.app.utils.MyUtils;
-import java.io.File;
+import com.app.dtos.ProductDTO;
 import java.io.IOException;
 import java.sql.SQLException;
 import javax.servlet.ServletException;
@@ -21,11 +19,11 @@ import org.apache.log4j.Logger;
  *
  * @author DuyNK
  */
-public class DeleteProductServlet extends HttpServlet {
-    private static final Logger LOGGER = Logger.getLogger(DeleteProductServlet.class);
-
-    private final String FAIL = "not_found.html";
-    private final String SUCCESS = AppRouting.routes.get("manageProduct");
+public class ProductDetailsServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(ProductDetailsServlet.class);
+    
+    private final String PRODUCT_DETAILS_PAGE = "product_details.jsp";
+    private final String NOT_FOUND = "not_found.html";
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -38,29 +36,25 @@ public class DeleteProductServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-       
-        String url = FAIL;
-
+        String url = NOT_FOUND;
+        
         try {
-            String productIDStr = request.getParameter("productID");
-            int productID = Integer.parseInt(productIDStr);
-
-            ProductDAO dao = new ProductDAO();
-
-            boolean success = dao.deleteProduct(productID);
-            if (success) {
-                // remove old image file if exists
-                String imageUrl = request.getParameter("image");
-                String basePath = getServletContext().getRealPath("");
-                String currentImagePath = basePath + File.separator + imageUrl;
-                MyUtils.deteteFile(currentImagePath);
-                url = SUCCESS;
+            String productID = request.getParameter("id");
+            if(productID != null){
+                ProductDAO dao = new ProductDAO();
+                ProductDTO product = dao.getProductByID(Integer.parseInt(productID));
+                if(product != null){
+                    request.setAttribute("PRODUCT", product);
+                    url = PRODUCT_DETAILS_PAGE;
+                }
+              
             }
-        } catch (IOException | NumberFormatException | SQLException | ServletException e) {
+            
+        } catch (NumberFormatException | SQLException e) {
             LOGGER.error("Error: ", e);
-        } finally {
-            response.sendRedirect(url);
-//            request.getRequestDispatcher(url).forward(request, response);
+        }
+        finally{
+            request.getRequestDispatcher(url).forward(request, response);
         }
     }
 

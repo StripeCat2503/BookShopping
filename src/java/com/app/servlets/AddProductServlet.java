@@ -15,6 +15,7 @@ import com.app.routes.AppRouting;
 import com.app.utils.MyUtils;
 import com.app.utils.ValidationUtils;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.ServletException;
@@ -22,6 +23,7 @@ import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -33,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
         maxRequestSize = 1024 * 1024 * 100
 )
 public class AddProductServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(AddProductServlet.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -53,6 +56,8 @@ public class AddProductServlet extends HttpServlet {
         boolean status = request.getParameter("slStatus").equals("1") ? true : false;
         String des = request.getParameter("txtDescription").trim();
         int categoryID = Integer.parseInt(request.getParameter("slCategory"));
+        String author = request.getParameter("author");
+        String publisher = request.getParameter("publisher");
 
         Map<String, String> routes = AppRouting.routes;
 
@@ -100,7 +105,7 @@ public class AddProductServlet extends HttpServlet {
                 String imageUrl = MyUtils.uploadFile(request, imgParam, uploadDir);
                 double price = Double.parseDouble(priceStr);
                 int quantity = Integer.parseInt(quantityStr);
-                ProductDTO product = new ProductDTO(productName, price, quantity, status, imageUrl, des, new ProductCategoryDTO(categoryID));
+                ProductDTO product = new ProductDTO(productName, price, quantity, status, imageUrl, des, new ProductCategoryDTO(categoryID), author, publisher);
                 boolean addedSuccess = productDAO.insertProduct(product);
                 if (addedSuccess) {
                     request.setAttribute("SUCCESS_MSG", "Product has been added successfully");
@@ -110,8 +115,8 @@ public class AddProductServlet extends HttpServlet {
             ProductCategoryDAO categoryDAO = new ProductCategoryDAO();
             List<ProductCategoryDTO> categoryList = categoryDAO.getAllCategories();
             request.setAttribute("CATEGORY_LIST", categoryList);
-        } catch (Exception e) {
-
+        } catch (IOException | NumberFormatException | SQLException | ServletException e) {
+            LOGGER.error("Error: ", e);
         } finally {
             request.getRequestDispatcher(url).forward(request, response);
         }
